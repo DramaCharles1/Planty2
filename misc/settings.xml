@@ -1,0 +1,28 @@
+<planty>
+  <planty_settings>
+    <duration>
+      30000
+    </duration>
+    <power>
+      100
+    </power>
+    <samples>
+      10
+    </samples>
+    <mois_thres>
+      500
+    </mois_thres>
+    <setpoint>
+      20000
+    </setpoint>
+    <max_control>
+      60000
+    </max_control>
+  </planty_settings>
+  <cam_settings>
+    <pic_dir>/media/pi/USB</pic_dir>
+    <pic_copy_dir>/var/www/html/Images</pic_copy_dir>
+    <lower_green l1="30" l2="50" l3="50"> </lower_green>
+    <upper_green u1="80" u2="250" u3="250"> </upper_green> 
+  </cam_settings>
+</planty> 
