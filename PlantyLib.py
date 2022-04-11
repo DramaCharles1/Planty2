@@ -137,7 +137,7 @@ class PlantyCommands(PlantyConnect):
         '''
         Send message to Planty
         '''
-        print(f"send: {message}")
+        print(f"[DEBUG] send: {message}")
         self.write(message)
 
     def __recieve_message(self):
