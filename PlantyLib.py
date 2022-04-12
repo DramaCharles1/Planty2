@@ -145,7 +145,7 @@ class PlantyCommands(PlantyConnect):
         Recieve message from Planty
         '''
         recieve = self.read()
-        print(f"Recieve: {recieve}")
+        print(f"[DEBUG] Recieve: {recieve}")
 
         if self.__check_command(recieve):
             return self.__get_command_value(recieve)
