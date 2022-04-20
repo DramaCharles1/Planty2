@@ -48,11 +48,11 @@ class Table:
     Dict'''
     def __init__(self, name : str, model : Dict[str,str]) -> None:
         self. name = name
-        self.model = model
+        self.columns = model.values()
 
 class DataBaseHandler:
     '''Database handler class'''
-    def __init__(self, host, user="root", password="password"):
+    def __init__(self, host="localhost", user="root", password="password"):
         self.host = host
         self.user = user
         self.password = password
@@ -73,7 +73,7 @@ class DataBaseHandler:
 
     def connect_to_database(self, database):
         '''Connect to database. The cursor will point to database'''
-        if not self._database_exist:
+        if not self.database_exist:
             raise Exception(f"Database {database} does not exist")
         try:
             self.connection = mysql.connector.connect(
@@ -88,25 +88,25 @@ class DataBaseHandler:
 
     def create_database(self, new_database) -> bool:
         '''Create new database. Returns False if already exist'''
-        if self._database_exist(new_database):
-            print(f"DEBUG: Database {new_database} already exist")
+        if self.database_exist(new_database):
+            print(f"[DEBUG] Database {new_database} already exist")
             return False
         insert_statement = f"CREATE DATABASE {new_database}"
         self.cursor.execute(insert_statement)
-        print(f"DEBUG: Database {new_database} created")
+        print(f"[DEBUG] Database {new_database} created")
         return True
 
     def delete_database(self, remove_database):
         '''Delete database. Returns False if does not exist'''
         insert_statement = f"DROP DATABASE {remove_database}"
-        if self._database_exist(remove_database):
+        if self.database_exist(remove_database):
             self.cursor.execute(insert_statement)
-            print(f"DEBUG: Database {remove_database} deleted")
+            print(f"[DEBUG] Database {remove_database} deleted")
             return True
-        print(f"DEBUG: Database {remove_database} does not exist")
+        print(f"[DEBUG] Database {remove_database} does not exist")
         return False
 
-    def _database_exist(self, database_check: str) -> bool:
+    def database_exist(self, database_check: str) -> bool:
         for database in self._get_databases():
             if database_check in database:
                 return True
@@ -135,8 +135,20 @@ class DataBaseHandler:
             self.cursor.execute(insert_statement)
             return True
         except mysql.connector.errors.ProgrammingError as program_error:
-            print(f"DEBUG: {program_error}")
+            print(f"[DEBUG] {program_error}")
             return False
+        
+    def table_exist(self, table_check: str) -> bool:
+        for table in self._get_tables():
+            if table_check in table:
+                return True
+        return False
+
+    def _get_tables(self) -> List[str]:
+        insert_statement = "SHOW TABLES"
+        self.cursor.execute(insert_statement)
+        tables = self.cursor.fetchall()
+        return list(itertools.chain(*tables))
 
     def delete_table(self, table_name: str):
         '''Delete table_name table form current database'''
@@ -145,7 +157,7 @@ class DataBaseHandler:
             self.cursor.execute(insert_statement)
             return True
         except mysql.connector.errors.ProgrammingError as program_error:
-            print(f"DEBUG: {program_error}")
+            print(f"[DEBUG] {program_error}")
             return False
 
     def insert_into_table(self, table_name: str, table: Dict[str,Any]):
@@ -165,14 +177,12 @@ class DataBaseHandler:
         insert_statement_colums += ") "
         insert_statement_values += ")"
         insert_statement = insert_statement_start + insert_statement_colums + insert_statement_values
-        print(insert_statement)
-        print(values)
         try:
             self.cursor.execute(insert_statement, values)
             self._commit()
             return True
         except mysql.connector.errors.ProgrammingError as program_error:
-            print(f"DEBUG: {program_error}")
+            print(f"[DEBUG] {program_error}")
             return False
 
     def select_from_table(self, table_name: str, columns: List[str], order=False, order_by=None, limit=0):
@@ -183,8 +193,8 @@ class DataBaseHandler:
         insert_columns = insert_columns[0:len(insert_columns)-2]
         insert_statement = f"SELECT {insert_columns} FROM {table_name}"
         if order:
-            if order_by not in columns:
-                raise Exception("order_by is not a valid column")
+            '''if order_by not in columns:
+                raise Exception("order_by is not a valid column")'''
             insert_order = f" order by {order_by} desc"
             insert_statement += insert_order
         if limit > 0:
@@ -194,7 +204,7 @@ class DataBaseHandler:
             self.cursor.execute(insert_statement)
             return self.cursor.fetchall()
         except mysql.connector.errors.ProgrammingError as program_error:
-            print(f"DEBUG: {program_error}")
+            print(f"[DEBUG] {program_error}")
             raise program_error
 
     def _commit(self) -> bool:
@@ -202,7 +212,7 @@ class DataBaseHandler:
             self.connection.commit()
             return True
         except mysql.connector.Error as connect_error:
-            print(f"DEBUG: {connect_error}")
+            print(f"[DEBUG] {connect_error}")
             return False
 
 if __name__ == "__main__":
@@ -219,7 +229,7 @@ if __name__ == "__main__":
     databaseHandler.close_database_connection()
     databaseHandler.connect_to_database(database)
     test_table = Table(table, TestModel())
-    databaseHandler.create_table(test_table.name, test_table.model.values())
+    databaseHandler.create_table(test_table.name, test_table.columns)
     test_data= {"plant" : "Basil55", "motor_duration" : 50000, "motor_power" : None}
     databaseHandler.insert_into_table(test_table.name, test_data)
     temp = databaseHandler.select_from_table(table, list(test_data.keys()))
