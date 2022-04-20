@@ -30,25 +30,31 @@ class PlantySetings(SettingsHandler):
         self._moisture_threshold = planty_settings[0].getElementsByTagName("moisture_threshold")[0].firstChild.data.strip()
         self._light_setpoint = planty_settings[0].getElementsByTagName("light_setpoint")[0].firstChild.data.strip()
         self._light_max_control = planty_settings[0].getElementsByTagName("max_light")[0].firstChild.data.strip()
+        self.settings = {"motor_duration" : self.motor_duration,
+                        "motor_power" : self.motor_power,
+                        "moisture_samples" : self.moisture_samples,
+                        "moisture_threshold" : self.moisture_threshold,
+                        "light_setpoint" : self.light_setpoint,
+                        "max_light" : self.max_light}
 
     @property
-    def duration(self) -> int:
-        return self._duration
+    def motor_duration(self) -> int:
+        return int(self._duration)
     @property
-    def power(self) -> int:
-        return self._power
+    def motor_power(self) -> int:
+        return int(self._power)
     @property
-    def samples(self) -> int:
-        return self._samples
+    def moisture_samples(self) -> int:
+        return int(self._samples)
     @property
     def moisture_threshold(self) -> int:
-        return self._moisture_threshold
+        return int(self._moisture_threshold)
     @property
     def light_setpoint(self) -> int:
-        return self._light_setpoint
+        return int(self._light_setpoint)
     @property
-    def light_max_control(self) -> int:
-        return self._light_max_control
+    def max_light(self) -> int:
+        return int(self._light_max_control)
 
 class CameraSettings(SettingsHandler):
     '''
