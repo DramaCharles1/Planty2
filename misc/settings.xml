@@ -1,7 +1,7 @@
 <planty>
   <planty_settings>
     <motor_duration>
-      30000
+      40000
     </motor_duration>
     <motor_power>
       100
@@ -10,13 +10,13 @@
       10
     </moisture_samples>
     <moisture_threshold>
-      500
+      400
     </moisture_threshold>
     <light_setpoint>
       20000
     </light_setpoint>
     <max_light>
-      60000
+      50000
     </max_light>
   </planty_settings>
   <camera_settings>
