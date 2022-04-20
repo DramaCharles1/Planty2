@@ -25,7 +25,7 @@ def CameraModel() -> Dict[str,str]:
     "datetime" : "datetime DATETIME NOT NULL"}
     return model
 
-def SettingsModel() -> Dict[str,str]:
+def PlantySettingsModel() -> Dict[str,str]:
     '''SQL settings Table model'''
     model = {"motor_duration" : "motor_duration INT NOT NULL",
     "motor_power" : "motor_power INT NOT NULL",
@@ -33,6 +33,18 @@ def SettingsModel() -> Dict[str,str]:
     "moisture_threshold" : "moisture_threshold INT NOT NULL",
     "light_setpoint" : "light_setpoint INT NOT NULL",
     "max_light" : "max_light INT NOT NULL",
+    "datetime" : "datetime DATETIME NOT NULL"}
+    return model
+
+def CameraSettingsModel() -> Dict[str,str]:
+    model = {"picture_directory" : "picture_directory VARCHAR(20) NOT NULL",
+    "picture_copy_directory" : "picture_copy_directory VARCHAR(20) NOT NULL",
+    "l1" : "l1 INT NOT NULL",
+    "l2" : "l2 INT NOT NULL",
+    "l3" : "l3 INT NOT NULL",
+    "u1" : "u1 INT NOT NULL",
+    "u2" : "u2 INT NOT NULL",
+    "u3" : "u3 INT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"}
     return model
 
@@ -137,7 +149,7 @@ class DataBaseHandler:
         except mysql.connector.errors.ProgrammingError as program_error:
             print(f"[DEBUG] {program_error}")
             return False
-        
+
     def table_exist(self, table_check: str) -> bool:
         for table in self._get_tables():
             if table_check in table:
@@ -193,8 +205,6 @@ class DataBaseHandler:
         insert_columns = insert_columns[0:len(insert_columns)-2]
         insert_statement = f"SELECT {insert_columns} FROM {table_name}"
         if order:
-            '''if order_by not in columns:
-                raise Exception("order_by is not a valid column")'''
             insert_order = f" order by {order_by} desc"
             insert_statement += insert_order
         if limit > 0:

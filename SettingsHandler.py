@@ -63,16 +63,24 @@ class CameraSettings(SettingsHandler):
     def __init__(self, path, file) -> None:
         super().__init__(path, file)
 
-        cam_settings = self.mydoc.getElementsByTagName('camera_settings')
+        camera_settings = self.mydoc.getElementsByTagName('camera_settings')
 
-        self._picture_directory = cam_settings[0].getElementsByTagName("picture_directory")[0].firstChild.data.strip()
-        self._picture_copy_directory = cam_settings[0].getElementsByTagName("picture_copy_directory")[0].firstChild.data.strip()
-        self._lower_green_filter = [int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l1")),
-                                    int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l2")),
-                                    int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l3"))]
-        self._upper_green_filter = [int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u1")),
-                                    int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u2")),
-                                    int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u3"))]
+        self._picture_directory = camera_settings[0].getElementsByTagName("picture_directory")[0].firstChild.data.strip()
+        self._picture_copy_directory = camera_settings[0].getElementsByTagName("picture_copy_directory")[0].firstChild.data.strip()
+        self._lower_green_filter = [int(camera_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l1")),
+                                    int(camera_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l2")),
+                                    int(camera_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l3"))]
+        self._upper_green_filter = [int(camera_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u1")),
+                                    int(camera_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u2")),
+                                    int(camera_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u3"))]
+        self.settings = {"picture_directory" : self.picture_directory,
+        "picture_copy_directory" : self.picture_copy_directory,
+        "l1" : self.lower_green_filter[0],
+        "l2" : self.lower_green_filter[1],
+        "l3" : self.lower_green_filter[2],
+        "u1" : self.lower_green_filter[0],
+        "u2" : self.lower_green_filter[1],
+        "u3" : self.lower_green_filter[2]}
 
     @property
     def picture_directory(self) -> str:
