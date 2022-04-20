@@ -24,12 +24,12 @@ class PlantySetings(SettingsHandler):
 
         planty_settings = self.mydoc.getElementsByTagName('planty_settings')
 
-        self._duration = planty_settings[0].getElementsByTagName("duration")[0].firstChild.data.strip()
-        self._power = planty_settings[0].getElementsByTagName("power")[0].firstChild.data.strip()
-        self._samples = planty_settings[0].getElementsByTagName("samples")[0].firstChild.data.strip()
-        self._moisture_threshold = planty_settings[0].getElementsByTagName("mois_thres")[0].firstChild.data.strip()
-        self._light_setpoint = planty_settings[0].getElementsByTagName("setpoint")[0].firstChild.data.strip()
-        self._light_max_control = planty_settings[0].getElementsByTagName("max_control")[0].firstChild.data.strip()
+        self._duration = planty_settings[0].getElementsByTagName("motor_duration")[0].firstChild.data.strip()
+        self._power = planty_settings[0].getElementsByTagName("motor_power")[0].firstChild.data.strip()
+        self._samples = planty_settings[0].getElementsByTagName("moisture_samples")[0].firstChild.data.strip()
+        self._moisture_threshold = planty_settings[0].getElementsByTagName("moisture_threshold")[0].firstChild.data.strip()
+        self._light_setpoint = planty_settings[0].getElementsByTagName("light_setpoint")[0].firstChild.data.strip()
+        self._light_max_control = planty_settings[0].getElementsByTagName("max_light")[0].firstChild.data.strip()
 
     @property
     def duration(self) -> int:
@@ -50,23 +50,23 @@ class PlantySetings(SettingsHandler):
     def light_max_control(self) -> int:
         return self._light_max_control
 
-class CamSettings(SettingsHandler):
+class CameraSettings(SettingsHandler):
     '''
     Camera specifc settings
     '''
     def __init__(self, path, file) -> None:
         super().__init__(path, file)
 
-        cam_settings = self.mydoc.getElementsByTagName('cam_settings')
+        cam_settings = self.mydoc.getElementsByTagName('camera_settings')
 
-        self._picture_directory = cam_settings[0].getElementsByTagName("pic_dir")[0].firstChild.data.strip()
-        self._picture_copy_directory = cam_settings[0].getElementsByTagName("pic_copy_dir")[0].firstChild.data.strip()
-        self._lower_green_filter = [int(cam_settings[0].getElementsByTagName("lower_green")[0].getAttribute("l1")),
-                                    int(cam_settings[0].getElementsByTagName("lower_green")[0].getAttribute("l2")),
-                                    int(cam_settings[0].getElementsByTagName("lower_green")[0].getAttribute("l3"))]
-        self._upper_green_filter = [int(cam_settings[0].getElementsByTagName("upper_green")[0].getAttribute("u1")),
-                                    int(cam_settings[0].getElementsByTagName("upper_green")[0].getAttribute("u2")),
-                                    int(cam_settings[0].getElementsByTagName("upper_green")[0].getAttribute("u3"))]
+        self._picture_directory = cam_settings[0].getElementsByTagName("picture_directory")[0].firstChild.data.strip()
+        self._picture_copy_directory = cam_settings[0].getElementsByTagName("picture_copy_directory")[0].firstChild.data.strip()
+        self._lower_green_filter = [int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l1")),
+                                    int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l2")),
+                                    int(cam_settings[0].getElementsByTagName("lower_green_filter")[0].getAttribute("l3"))]
+        self._upper_green_filter = [int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u1")),
+                                    int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u2")),
+                                    int(cam_settings[0].getElementsByTagName("upper_green_filter")[0].getAttribute("u3"))]
 
     @property
     def picture_directory(self) -> str:
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     path = "misc"
     file = "settings.xml"
     planty_settings = PlantySetings(path, file)
-    cam_settings = CamSettings(path, file)
+    cam_settings = CameraSettings(path, file)
 
     print(f"duraion: {planty_settings.duration}")
     print(f"power: {planty_settings.power}")
