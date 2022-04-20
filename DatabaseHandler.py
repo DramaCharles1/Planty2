@@ -175,6 +175,28 @@ class DataBaseHandler:
             print(f"DEBUG: {program_error}")
             return False
 
+    def select_from_table(self, table_name: str, columns: List[str], order=False, order_by=None, limit=0):
+        '''Select columns from table_name from current database'''
+        insert_columns = ""
+        for column in columns:
+            insert_columns += f"{column}, "
+        insert_columns = insert_columns[0:len(insert_columns)-2]
+        insert_statement = f"SELECT {insert_columns} FROM {table_name}"
+        if order:
+            if order_by not in columns:
+                raise Exception("order_by is not a valid column")
+            insert_order = f" order by {order_by} desc"
+            insert_statement += insert_order
+        if limit > 0:
+            insert_limit = f" limit {limit}"
+            insert_statement += insert_limit
+        try:
+            self.cursor.execute(insert_statement)
+            return self.cursor.fetchall()
+        except mysql.connector.errors.ProgrammingError as program_error:
+            print(f"DEBUG: {program_error}")
+            raise program_error
+
     def _commit(self) -> bool:
         try:
             self.connection.commit()
@@ -200,6 +222,15 @@ if __name__ == "__main__":
     databaseHandler.create_table(test_table.name, test_table.model.values())
     test_data= {"plant" : "Basil55", "motor_duration" : 50000, "motor_power" : None}
     databaseHandler.insert_into_table(test_table.name, test_data)
+    temp = databaseHandler.select_from_table(table, list(test_data.keys()))
+    print(temp)
+    select_cols = ["plant","motor_duration"]
+    temp = databaseHandler.select_from_table(table, select_cols)
+    print(temp)
+    temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration")
+    print(temp)
+    temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration", limit=10)
+    print(temp)
     #databaseHandler.delete_table(planty_table.name)
     #databaseHandler.delete_table(camera_table.name)
     #databaseHandler.delete_table(settings_table.name)
