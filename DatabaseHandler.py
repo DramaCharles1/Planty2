@@ -21,7 +21,7 @@ def CameraModel() -> Dict[str,str]:
     '''SQL camera Table model'''
     model = {"original_pixel" : "original_pixel INT NOT NULL",
     "green_pixel" : "green_pixel INT NOT NULL",
-    "green_percent" : "green_ercent FLOAT NOT NULL",
+    "green_percent" : "green_percent FLOAT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"}
     return model
 
