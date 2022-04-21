@@ -8,7 +8,7 @@ class PlantyColor:
     and image calculation. Everything is calculated from original_image open from
     path and image name'''
     def __init__(self, path, image_name) -> None:
-        full_path = os.path.join(path, image_name)
+        full_path = os.path.join(path, f"{image_name}.jpg")
         if not os.path.isfile(full_path):
             raise FileExistsError(f"[DEBUG] Image: {full_path}")
         self.original_image = cv2.imread(full_path)
@@ -26,7 +26,7 @@ class PlantyColor:
     def save_image(self, image, result_path, result_name):
         if not os.path.isdir(result_path):
             raise FileExistsError(f"[DEBUG] Directory: {result_path} does not exist")
-        full_path = os.path.join(result_path, result_name)
+        full_path = os.path.join(result_path, f"{result_name}.jpg")
         cv2.imwrite(full_path, image)
 
 if __name__ == "__main__":
