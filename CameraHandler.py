@@ -18,9 +18,9 @@ class CameraHandler:
         full_path = os.path.join(path, picture_name)
         print(f"Full path: {full_path}")
         if nightmode:
-            self.camera.iso = 100
-        else:
             self.camera.iso = 800
+        else:
+            self.camera.iso = 100
 
         self.camera.start_preview()
         time.sleep(2) #Camera warm up time
@@ -35,6 +35,6 @@ class CameraHandler:
 if __name__ == "__main__":
     print("Camera test")
     path = ""
-    test_picture = "awbgains.jpg"
+    test_picture = "test_night.jpg"
     cam = CameraHandler()
-    cam.take_picture(path, test_picture)
+    cam.take_picture(path, test_picture, nightmode=True)
