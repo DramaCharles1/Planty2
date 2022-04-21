@@ -1,4 +1,5 @@
 pyserial
 pylint
 mysql-connector-python
-numpy
+numpy==1.17.4
+picamera
