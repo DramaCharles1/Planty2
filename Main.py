@@ -1,4 +1,8 @@
+import os
 from datetime import datetime
+import numpy as np
+from CameraHandler import CameraHandler
+from PlantyColor import PlantyColor
 from SettingsHandler import PlantySetings
 from SettingsHandler import CameraSettings
 from DatabaseHandler import CameraModel, DataBaseHandler, PlantyModel
@@ -82,10 +86,33 @@ def main(settings_path, settings_file, camera, nightmode):
         new_camera_settings["datetime"] = timestamp
         database_handler.insert_into_table(CAMERA_SETTINGS_TABLE, new_camera_settings)
 
+    if camera:
+        planty_camera = CameraHandler()
+        image_name = timestamp
+        planty_camera.take_picture(camera_settings.picture_directory, image_name, nightmode=True)
+
+        original_color = PlantyColor(camera_settings.picture_directory, image_name)
+        green_image = original_color.color_filter_image(camera_settings.lower_green_filter, camera_settings.upper_green_filter)
+        green_image_name = f"{image_name}_green"
+        original_color.save_image(green_image, camera_settings.picture_directory, green_image_name)
+
+        original_image_pixels = np.count_nonzero(original_color.original_image)
+        green_image_pixels = np.count_nonzero(green_image)
+        green_percent = round((green_image_pixels / original_image_pixels)*100, 1)
+        print(f"original image pixels: {original_image_pixels}")
+        print(f"green image pixels: {green_image_pixels}")
+        print(f"green percent: {green_percent}")
+
+        camera_result = {"original_pixel" : original_image_pixels,
+                        "green_pixel" : green_image_pixels,
+                        "green_percent" : green_percent,
+                        "datetime" : timestamp}
+        database_handler.insert_into_table(CAMERA_TABLE, camera_result)
+
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
     print("main test")
-    test_argv = ["misc/", "settings.xml", False, False]
+    test_argv = ["misc/", "settings.xml", True, False]
 
     if len(test_argv) != 4:
         raise Exception(f"Arguements not correct: {test_argv}")
