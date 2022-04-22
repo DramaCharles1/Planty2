@@ -1,4 +1,5 @@
 import os
+from typing import List
 from xml.dom import minidom
 
 class SettingsHandler:
@@ -89,10 +90,10 @@ class CameraSettings(SettingsHandler):
     def picture_copy_directory(self) -> str:
         return self._picture_copy_directory
     @property
-    def lower_green_filter(self):
+    def lower_green_filter(self) -> List[int]:
         return self._lower_green_filter
     @property
-    def upper_green_filter(self):
+    def upper_green_filter(self) -> List[int]:
         return self._upper_green_filter
 
 

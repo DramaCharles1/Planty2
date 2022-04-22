@@ -11,6 +11,13 @@ class PlantyConnect:
     Port to access Arduino. Baudrate 57600 default. Delay in ms between send and recieve
     '''
     def __init__(self, port: str, baudrate: int, timeout: float):
+        self.baudrate = baudrate
+        self.ser = None
+        self.read_timeout = timeout
+        self.write_timeout = timeout
+        self.connect = False
+        self.port = ""
+
         if port == "":
             try:
                 self.port = self.__get_connected_port()
@@ -19,17 +26,11 @@ class PlantyConnect:
         else:
             self.port = port
 
-        self.baudrate = baudrate
-        self.ser = None
-        self.read_timeout = timeout
-        self.write_timeout = timeout
-        self.connect = False
-
         try:
             self.ser = serial.Serial(self.port, self.baudrate, timeout=self.read_timeout,
                                      write_timeout=self.write_timeout)
         except serial.SerialException as SerialEx:
-            print(str(SerialEx))
+            raise SerialEx(f"[DEBUG] Could not connect to: {self.port}")
 
         sleep(2)
         self.connect = True
@@ -83,7 +84,7 @@ class Temp_option(Enum):
     '''
     Temperature sensor options
     '''
-    TEMP = 1
+    TEMPERATURE = 1
     HUMIDITY = 2
 
 
@@ -152,49 +153,46 @@ class PlantyCommands(PlantyConnect):
         else:
             raise Exception("Error when recieving message: " + str(recieve))
 
-    def read_plant(self):
+    def read_plant(self) -> str:
         '''
         Read what is planted
         '''
         command = "PLANT=1"
-        return self.__send_and_recieve(command)
+        return str(self.__send_and_recieve(command))
 
-    def writePlant(self, plant: str):
+    def write_plant(self, plant: str):
         '''
         Write what is planted
         '''
         command = f"PLANT=2,{plant}"
         return self.__send_and_recieve(command)
 
-    def read_temp(self, temp_option: Temp_option):
+    def read_temperature(self, temp_option: Temp_option) -> float:
         '''
         Read temperatue or humidity in house
         '''
-        if temp_option == Temp_option.TEMP:
+        if temp_option == Temp_option.TEMPERATURE:
             command = "TEMP=1"
-            return self.__send_and_recieve(command)
-
         elif temp_option == Temp_option.HUMIDITY:
             command = "TEMP=2"
-            return self.__send_and_recieve(command)
-
         else:
-            raise AttributeError("No valid temp sensor option")
+            raise AttributeError(f"temp_option needs to be of type Temp_option")
+        return float(self.__send_and_recieve(command))
 
-    def read_moisture(self, samples=1):
+    def read_moisture(self, samples=1) -> float:
         '''
         Read moisture sensor. Average value from n samples
         samples(int): number of samples
         '''
         command = f"MOIS={str(samples)}"
-        return self.__send_and_recieve(command)
+        return float(self.__send_and_recieve(command))
 
-    def read_ALS(self):
+    def read_ALS(self) -> int:
         '''
         Read ALS
         '''
         command = "ALS"
-        return self.__send_and_recieve(command)
+        return int(self.__send_and_recieve(command))
 
     def start_pump(self, start: bool, power: int, duration: int):
         '''
