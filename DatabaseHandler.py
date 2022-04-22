@@ -29,8 +29,8 @@ def PlantySettingsModel() -> Dict[str,str]:
     '''SQL settings Table model'''
     model = {"motor_duration" : "motor_duration INT NOT NULL",
     "motor_power" : "motor_power INT NOT NULL",
-    "moisture_samples" : "moisture_samples INT NOT NULL",
-    "moisture_threshold" : "moisture_threshold INT NOT NULL",
+    "moisture_samples" : "moisture_samples FLOAT NOT NULL",
+    "moisture_threshold" : "moisture_threshold FLOAT NOT NULL",
     "light_setpoint" : "light_setpoint INT NOT NULL",
     "max_light" : "max_light INT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"}

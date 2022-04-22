@@ -47,8 +47,8 @@ class PlantySetings(SettingsHandler):
     def moisture_samples(self) -> int:
         return int(self._samples)
     @property
-    def moisture_threshold(self) -> int:
-        return int(self._moisture_threshold)
+    def moisture_threshold(self) -> float:
+        return float(self._moisture_threshold)
     @property
     def light_setpoint(self) -> int:
         return int(self._light_setpoint)
