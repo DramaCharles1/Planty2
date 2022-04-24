@@ -1,11 +1,14 @@
+import time
 from datetime import datetime
 import numpy as np
 from CameraHandler import CameraHandler
 from PlantyColor import PlantyColor
 from SettingsHandler import PlantySetings
 from SettingsHandler import CameraSettings
-from DatabaseHandler import CameraModel, DataBaseHandler, PlantyModel
+from DatabaseHandler import DataBaseHandler
 from DatabaseHandler import Table
+from DatabaseHandler import CameraModel
+from DatabaseHandler import PlantyModel
 from DatabaseHandler import PlantySettingsModel
 from DatabaseHandler import CameraSettingsModel
 from PlantyLib import PlantyCommands
@@ -20,6 +23,9 @@ CAMERA_SETTINGS_TABLE = "Camera_settings"
 MOIS_SAMPLES = 5
 
 def main(settings_path, settings_file, camera, nightmode):
+    camera = True if camera == "True" else camera == False
+    nightmode = True if nightmode == "True" else nightmode == False
+
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     print(f"[START] {timestamp}")
     planty_settings = PlantySetings(settings_path, settings_file)
@@ -57,12 +63,16 @@ def main(settings_path, settings_file, camera, nightmode):
                         "motor_power" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["motor_power"], True, "datetime", limit=1)[0][0],
                         "moisture_samples" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["moisture_samples"], True, "datetime", limit=1)[0][0],
                         "moisture_threshold" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["moisture_threshold"], True, "datetime", limit=1)[0][0],
+                        "kp" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["kp"], True, "datetime", limit=1)[0][0],
+                        "ki" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["ki"], True, "datetime", limit=1)[0][0],
+                        "integration_time" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["integration_time"], True, "datetime", limit=1)[0][0],
                         "light_setpoint" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["light_setpoint"], True, "datetime", limit=1)[0][0],
                         "max_light" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["max_light"], True, "datetime", limit=1)[0][0]}
     new_planty_settings = {}
     update_settings_database = False
     for setting in last_planty_settings.keys():
         if not last_planty_settings[setting] == planty_settings.settings[setting]:
+            print(f"[DEBUG] update planty setting {setting} to {planty_settings.settings[setting]}")
             update_settings_database = True
             new_planty_settings[setting] = planty_settings.settings[setting]
         else:
@@ -83,6 +93,7 @@ def main(settings_path, settings_file, camera, nightmode):
     update_settings_database = False
     for setting in last_camera_settings.keys():
         if not last_camera_settings[setting] == camera_settings.settings[setting]:
+            print(f"[DEBUG] update camera setting {setting} to {camera_settings.settings[setting]}")
             update_settings_database = True
             new_camera_settings[setting] = camera_settings.settings[setting]
         else:
@@ -116,10 +127,13 @@ def main(settings_path, settings_file, camera, nightmode):
         database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
     planty_lib.lights(True, Light_color_option.WHITE, 0)
+    if camera: time.sleep(1)
+
     planty_result = {}
     planty_result["light_wo_regulator"] = planty_lib.read_ALS()
-    planty_lib.light_regulator_values(True, 1.0, 1.75, 100, planty_settings.max_light)
-    planty_lib.start_light_regulator(True, planty_settings.light_setpoint)
+    if not nightmode:
+        planty_lib.light_regulator_values(True, planty_settings.kp, planty_settings.ki, planty_settings.integration_time, planty_settings.max_light)
+        planty_lib.start_light_regulator(True, planty_settings.light_setpoint)
 
     planty_result["plant"] = planty_lib.read_plant()
     planty_result["temperature"] = planty_lib.read_temperature(Temp_option.TEMPERATURE)
@@ -153,6 +167,7 @@ if __name__ == "__main__":
         main(test_argv[0], test_argv[1], test_argv[2], test_argv[3])
         print("End main test")
     elif len(sys.argv) == 5:
+        print(f"[ARGUEMENTS] {sys.argv}")
         main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
     else:
         if len(sys.argv) < 5:
