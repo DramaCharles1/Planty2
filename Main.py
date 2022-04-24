@@ -10,6 +10,7 @@ from DatabaseHandler import PlantySettingsModel
 from DatabaseHandler import CameraSettingsModel
 from PlantyLib import PlantyCommands
 from PlantyLib import Temp_option
+from PlantyLib import Light_color_option
 
 PLANTY_DATABASE = "Planty2"
 PLANTY_TABLE = "Planty_data"
@@ -91,6 +92,7 @@ def main(settings_path, settings_file, camera, nightmode):
         database_handler.insert_into_table(CAMERA_SETTINGS_TABLE, new_camera_settings)
 
     if camera:
+        planty_lib.lights(True, Light_color_option.WHITE, 255)
         planty_camera = CameraHandler()
         image_name = timestamp
         planty_camera.take_picture(camera_settings.picture_directory, image_name, nightmode=False)
@@ -103,9 +105,9 @@ def main(settings_path, settings_file, camera, nightmode):
         original_image_pixels = np.count_nonzero(original_color.original_image)
         green_image_pixels = np.count_nonzero(green_image)
         green_percent = round((green_image_pixels / original_image_pixels)*100, 1)
-        print(f"original image pixels: {original_image_pixels}")
-        print(f"green image pixels: {green_image_pixels}")
-        print(f"green percent: {green_percent}")
+        print(f"[DEBUG] original image pixels: {original_image_pixels}")
+        print(f"[DEBUG] green image pixels: {green_image_pixels}")
+        print(f"[DEBUG] green percent: {green_percent}")
 
         camera_result = {"original_pixel" : original_image_pixels,
                         "green_pixel" : green_image_pixels,
@@ -113,7 +115,12 @@ def main(settings_path, settings_file, camera, nightmode):
                         "datetime" : timestamp}
         database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
+    planty_lib.lights(True, Light_color_option.WHITE, 0)
     planty_result = {}
+    planty_result["light_wo_regulator"] = planty_lib.read_ALS()
+    planty_lib.light_regulator_values(True, 1.0, 1.75, 100, planty_settings.max_light)
+    planty_lib.start_light_regulator(True, planty_settings.light_setpoint)
+
     planty_result["plant"] = planty_lib.read_plant()
     planty_result["temperature"] = planty_lib.read_temperature(Temp_option.TEMPERATURE)
     planty_result["humidity"] = planty_lib.read_temperature(Temp_option.HUMIDITY)
@@ -137,7 +144,7 @@ def main(settings_path, settings_file, camera, nightmode):
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
     print("main test")
-    test_argv = ["misc/", "settings.xml", False, True]
+    test_argv = ["misc/", "settings.xml", True, False]
 
     if len(test_argv) != 4:
         raise Exception(f"Arguements not correct: {test_argv}")
