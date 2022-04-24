@@ -21,7 +21,7 @@ MOIS_SAMPLES = 5
 
 def main(settings_path, settings_file, camera, nightmode):
     timestamp = datetime.now().replace(microsecond=0).isoformat()
-    print(f"[DEBUG] {timestamp}")
+    print(f"[START] {timestamp}")
     planty_settings = PlantySetings(settings_path, settings_file)
     camera_settings = CameraSettings(settings_path, settings_file)
     database_handler = DataBaseHandler()
@@ -143,11 +143,18 @@ def main(settings_path, settings_file, camera, nightmode):
 
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
-    print("main test")
-    test_argv = ["misc/", "settings.xml", True, False]
-
-    if len(test_argv) != 4:
-        raise Exception(f"Arguements not correct: {test_argv}")
-    main(test_argv[0], test_argv[1], test_argv[2], test_argv[3])
-
-    print("End main test")
+    import sys
+    if len(sys.argv) == 1:
+        test_argv = ["misc/", "settings.xml", True, False]
+        print("main test")
+        if len(test_argv) != 4:
+            raise Exception(f"Arguements not correct: {test_argv}")
+        print(test_argv)
+        main(test_argv[0], test_argv[1], test_argv[2], test_argv[3])
+        print("End main test")
+    elif len(sys.argv) == 5:
+        main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    else:
+        if len(sys.argv) < 5:
+            raise Exception(f"[DEBUG] Not enough arguements: {sys.argv}")
+        raise Exception(f"[DEBUG] Too many arguments: {sys.argv}")
