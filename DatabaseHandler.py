@@ -12,6 +12,7 @@ def PlantyModel() -> Dict[str,str]:
     "temperature" : "temperature FLOAT NOT NULL",
     "humidity" : "humidity FLOAT NOT NULL",
     "light" : "light INT NOT NULL",
+    "light_wo_regulator" : "light_wo_regulator INT NOT NULL",
     "moisture" : "moisture FLOAT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"
     }
