@@ -207,12 +207,12 @@ class PlantyCommands(PlantyConnect):
             command = f"MOTR=0,{str(power)},{str(duration)}"
         return self.__send_and_recieve(command)
 
-    def lights(self, write: bool, color_option: Light_color_option, power: int):
+    def lights(self, write: bool, color_option=Light_color_option.PURPLE, power=0):
         '''
         Set LED lights.
         write(bool): read or write LED lights
         color_option(Light_color_option): choose color
-        power(int): light power in %
+        power(int): light power in 8-bit value (0-255)
         '''
         if write:
             command = f"LED=1,{str(int(color_option))},{str(power)}"
@@ -220,7 +220,7 @@ class PlantyCommands(PlantyConnect):
             command = "LED=2"
         return self.__send_and_recieve(command)
 
-    def light_regulator_values(self, write: bool, kp: float, ki: float, t: int, max_signal: int):
+    def light_regulator_values(self, write: bool, kp=0.0, ki=0.0, t=0, max_signal=0):
         '''
         Set PI light regulator values
         write(bool): read or write regulator values
