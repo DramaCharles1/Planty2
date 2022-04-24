@@ -29,12 +29,18 @@ class PlantySetings(SettingsHandler):
         self._power = planty_settings[0].getElementsByTagName("motor_power")[0].firstChild.data.strip()
         self._samples = planty_settings[0].getElementsByTagName("moisture_samples")[0].firstChild.data.strip()
         self._moisture_threshold = planty_settings[0].getElementsByTagName("moisture_threshold")[0].firstChild.data.strip()
+        self._kp = planty_settings[0].getElementsByTagName("kp")[0].firstChild.data.strip()
+        self._ki = planty_settings[0].getElementsByTagName("ki")[0].firstChild.data.strip()
+        self._integration_time = planty_settings[0].getElementsByTagName("integration_time")[0].firstChild.data.strip()
         self._light_setpoint = planty_settings[0].getElementsByTagName("light_setpoint")[0].firstChild.data.strip()
         self._light_max_control = planty_settings[0].getElementsByTagName("max_light")[0].firstChild.data.strip()
         self.settings = {"motor_duration" : self.motor_duration,
                         "motor_power" : self.motor_power,
                         "moisture_samples" : self.moisture_samples,
                         "moisture_threshold" : self.moisture_threshold,
+                        "kp" : self.kp,
+                        "ki" : self.ki,
+                        "integration_time" : self.integration_time,
                         "light_setpoint" : self.light_setpoint,
                         "max_light" : self.max_light}
 
@@ -50,6 +56,15 @@ class PlantySetings(SettingsHandler):
     @property
     def moisture_threshold(self) -> float:
         return float(self._moisture_threshold)
+    @property
+    def kp(self) -> float:
+        return float(self._kp)
+    @property
+    def ki(self) -> float:
+        return float(self._ki)
+    @property
+    def integration_time(self) -> int:
+        return int(self._integration_time)
     @property
     def light_setpoint(self) -> int:
         return int(self._light_setpoint)

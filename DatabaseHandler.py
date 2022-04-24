@@ -32,6 +32,9 @@ def PlantySettingsModel() -> Dict[str,str]:
     "motor_power" : "motor_power INT NOT NULL",
     "moisture_samples" : "moisture_samples FLOAT NOT NULL",
     "moisture_threshold" : "moisture_threshold FLOAT NOT NULL",
+    "kp" : "kp FLOAT NOT NULL",
+    "ki" : "ki FLOAT NOT NULL",
+    "integration_time" : "integration_time INT NOT NULL",
     "light_setpoint" : "light_setpoint INT NOT NULL",
     "max_light" : "max_light INT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"}
