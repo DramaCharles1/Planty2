@@ -1,17 +1,26 @@
 <planty>
   <planty_settings>
     <motor_duration>
-      40000
+      5000
     </motor_duration>
     <motor_power>
-      100
+      50
     </motor_power>
     <moisture_samples>
       10
     </moisture_samples>
     <moisture_threshold>
-      400
+      500
     </moisture_threshold>
+    <kp>
+      1.00
+    </kp>
+    <ki>
+      1.85
+    </ki>
+    <integration_time>
+      100
+    </integration_time>
     <light_setpoint>
       20000
     </light_setpoint>
@@ -22,7 +31,7 @@
   <camera_settings>
     <picture_directory>/media/pi/USB</picture_directory>
     <picture_copy_directory>/var/www/html/Images</picture_copy_directory>
-    <lower_green_filter l1="30" l2="50" l3="50"> </lower_green_filter>
+    <lower_green_filter l1="10" l2="15" l3="15"> </lower_green_filter>
     <upper_green_filter u1="80" u2="250" u3="250"> </upper_green_filter> 
   </camera_settings>
 </planty> 
