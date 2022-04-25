@@ -23,8 +23,20 @@ CAMERA_SETTINGS_TABLE = "Camera_settings"
 MOIS_SAMPLES = 5
 
 def main(settings_path, settings_file, camera, nightmode):
-    camera = True if camera == "True" else camera == False
-    nightmode = True if nightmode == "True" else nightmode == False
+    
+    if camera == "True":
+        camera = True
+    elif camera == "False":
+        camera = False
+    else:
+        raise Exception(f"Camera arguements not correct: {camera}")
+
+    if nightmode == "True":
+        nightmode = True
+    elif nightmode == "False":
+        nightmode = False
+    else:
+        raise Exception(f"Nightmode arguements not correct: {nightmode}")
 
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     print(f"[START] {timestamp}")
@@ -141,11 +153,11 @@ def main(settings_path, settings_file, camera, nightmode):
     planty_result["light"] = planty_lib.read_ALS()
     planty_result["moisture"] = planty_lib.read_moisture(samples=MOIS_SAMPLES)
 
-    if planty_result["moisture"] <= new_planty_settings["moisture_threshold"] and not nightmode:
-        planty_lib.start_pump(True, planty_settings["motor_duration"], planty_settings["motor_power"])
-        planty_result["motor_duration"] = planty_settings["motor_duration"]
-        planty_result["motor_power"] = planty_settings["motor_power"]
-    elif planty_result["moisture"] > new_planty_settings["moisture_threshold"] and not nightmode:
+    if planty_result["moisture"] <= planty_settings.settings["moisture_threshold"] and not nightmode:
+        planty_lib.start_pump(True, planty_settings.settings["motor_power"], planty_settings.settings["motor_duration"])
+        planty_result["motor_duration"] = planty_settings.settings["motor_duration"]
+        planty_result["motor_power"] = planty_settings.settings["motor_power"]
+    elif planty_result["moisture"] > planty_settings.settings["moisture_threshold"] and not nightmode:
         planty_result["motor_duration"] = 0
         planty_result["motor_power"] = 0
     else:
