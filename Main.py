@@ -119,6 +119,7 @@ def main(settings_path, settings_file, camera, nightmode):
         planty_camera = CameraHandler()
         image_name = timestamp
         planty_camera.take_picture(camera_settings.picture_directory, image_name, nightmode=False)
+        planty_camera.copy_picture(camera_settings.picture_directory, image_name, camera_settings.picture_copy_directory, image_name)
 
         original_color = PlantyColor(camera_settings.picture_directory, image_name)
         green_image = original_color.color_filter_image(camera_settings.lower_green_filter, camera_settings.upper_green_filter)

@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 import time
 from picamera import PiCamera
 
@@ -27,6 +28,13 @@ class CameraHandler:
         self.camera.stop_preview()
         if not self._check_picture_exist(path, picture_name):
             raise Exception(f"[DEBUG] Picture {full_path} could not be saved")
+
+    def copy_picture(self, source_path, original_name, dest_path, copy_name):
+        '''Copy picture and save in path as picture_name'''
+        if not self._check_picture_exist(source_path, original_name):
+            raise FileExistsError(f"[DEBUG] File {source_path}/{original_name} does not exist")
+        copyfile(os.path.join(source_path, f"{original_name}.jpg"),
+        os.path.join(dest_path, f"{copy_name}.jpg"))
 
     def _check_picture_exist(self, path, picture_name) -> bool:
         return os.path.isfile(os.path.join(path, f"{picture_name}.jpg"))
