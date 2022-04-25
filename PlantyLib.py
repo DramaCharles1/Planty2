@@ -13,27 +13,43 @@ class PlantyConnect:
     def __init__(self, port: str, baudrate: int, timeout: float):
         self.baudrate = baudrate
         self.ser = None
-        self.read_timeout = timeout
-        self.write_timeout = timeout
+        self._read_timeout = timeout
+        self._write_timeout = timeout
         self.connect = False
         self.port = ""
 
         if port == "":
             try:
                 self.port = self.__get_connected_port()
-            except Exception as e:
-                print(e)
+            except Exception as serial_port_error:
+                print(serial_port_error)
         else:
             self.port = port
 
         try:
-            self.ser = serial.Serial(self.port, self.baudrate, timeout=self.read_timeout,
-                                     write_timeout=self.write_timeout)
+            self.ser = serial.Serial(self.port, self.baudrate, timeout=self._read_timeout,
+                                     write_timeout=self._write_timeout)
         except serial.SerialException as SerialEx:
             raise SerialEx(f"[DEBUG] Could not connect to: {self.port}")
 
         sleep(2)
         self.connect = True
+
+    @property
+    def read_timeout(self) -> float:
+        return self._read_timeout
+
+    @read_timeout.setter
+    def read_timeout(self, timeout):
+        self._read_timeout = timeout
+
+    @property
+    def write_timeout(self) -> float:
+        return self._write_timeout
+
+    @write_timeout.setter
+    def write_timeout(self, timeout):
+        self._write_timeout = timeout
 
     def __get_connected_port(self):
         '''
@@ -70,14 +86,21 @@ class PlantyConnect:
         read from serial port
         '''
         start = datetime.now()
-        while (datetime.now() - start).total_seconds() < self.read_timeout:
+        while (datetime.now() - start).total_seconds() < self._read_timeout:
             if self.ser.in_waiting > 0:
                 while self.ser.in_waiting > 0:
                     rec = self.ser.readline()
                 return rec
-            else:
-                sleep(0.5)
+            sleep(0.1)
         raise Exception("No incoming message")
+
+    def change_timeout(self, timeout):
+        '''
+        Change read and write timeout. timeout in seconds
+        '''
+        self.read_timeout = timeout
+        self.write_timeout = timeout
+        self.ser.timeout = timeout
 
 
 class Temp_option(Enum):
@@ -117,8 +140,7 @@ class PlantyCommands(PlantyConnect):
             return True
         elif "ERR" in str(rec):
             return False
-        else:
-            raise Exception("Not a valid command recieved" + "rec: " + rec)
+        raise Exception("Not a valid command recieved" + "rec: " + rec)
 
     def __get_command_value(self, rec):
         '''
@@ -176,7 +198,7 @@ class PlantyCommands(PlantyConnect):
         elif temp_option == Temp_option.HUMIDITY:
             command = "TEMP=2"
         else:
-            raise AttributeError(f"temp_option needs to be of type Temp_option")
+            raise AttributeError("temp_option needs to be of type Temp_option")
         return float(self.__send_and_recieve(command))
 
     def read_moisture(self, samples=1) -> float:
@@ -201,11 +223,16 @@ class PlantyCommands(PlantyConnect):
         power(int): pump power in %
         duration(int): duration in ms
         '''
+        old_timeout = self.ser.timeout
+        new_timeout = (duration / 1000) + 1
+        self.change_timeout(new_timeout)
         if start:
             command = f"MOTR=1,{str(power)},{str(duration)}"
         else:
             command = f"MOTR=0,{str(power)},{str(duration)}"
-        return self.__send_and_recieve(command)
+        result =  self.__send_and_recieve(command)
+        self.change_timeout(old_timeout)
+        return result
 
     def lights(self, write: bool, color_option=Light_color_option.PURPLE, power=0):
         '''
