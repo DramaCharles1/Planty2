@@ -24,13 +24,13 @@ $lastCameraUpdate_insert_statement="SELECT * FROM $camera_data order by datetime
 $lastCameraUpdateQuery = $conn->query($lastCameraUpdate_insert_statement);
 $lastCameraUpdateResults= $lastCameraUpdateQuery->fetch_array(MYSQLI_BOTH);
 $lastCameraUpdateDatetime = $lastCameraUpdateResults["datetime"];
-$lastCameraupdateResult->free();
+//$lastCameraUpdateResults->free();
 
 $lastPlantyUpdate_insert_statement="SELECT * FROM $planty_data order by datetime desc limit 1";
 $lastUpdateQuery = $conn->query($lastPlantyUpdate_insert_statement);
 $lastUpdateResults = $lastUpdateQuery->fetch_array(MYSQLI_BOTH);
 $lastUpdateDatetime = $lastUpdateResults["datetime"];
-$lastUpdateResults->free();
+//$lastUpdateResults->free();
 
 $dir="/var/www/html/Images";
 $images = glob($dir . "/*.jpg");
@@ -78,17 +78,6 @@ $lightPlotWeek = "LightPlotWeek.png";
 	<img src="<?php echo $image3 ?>" width="512" height="384" alt="image 3" align="top"/>
 	<img src="<?php echo $image4 ?>" width="512" height="384" alt="image 3" align="top"/>
 -->
-
-	<h2>Moisture</h2>
-	<img src="<?php echo $moisPlot ?>" width="512" height="384" alt="Moisture plot" align="top"/>
- 	<img src="<?php echo $moisPlotWeek ?>" width="512" height="384" alt="Moisture plot week" align="top"/>
- 	<h2>Sun light</h2>
- 	<img src="<?php echo $lightPlot ?>" width="512" height="384" alt="Sun light plot" align="top"/>
- 	<img src="<?php echo $lightPlotWeek ?>" width="512" height="384" alt="Sun light plot week" align="top"/>
- 	<h2>Growth</h2>
- 	<img src="<?php echo $greenPlot ?>" width="512" height="384" alt="Growth plot" align="top"/>
- 	<img src="<?php echo $greenPlotMonth ?>" width="512" height="384" alt="Growth plot month" align="top"/>
- 	  	
  	 	
  	<form action="subpages/watch_planty.php">
     <input type="submit" value="Two day data" />

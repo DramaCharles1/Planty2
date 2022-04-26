@@ -55,11 +55,11 @@ $moisture_rows = $moisture_result->num_rows;
 					<th>Motor power</th>
 					<th>Temperature</th>
 					<th>Humidity</th>
-					<th>Light</th>
-					<th>Natural light</th>
 					<th>Moisture</th>
+					<th>Natural light</th>
+					<th>Light</th>
 				</tr>";
-		for ($x = 0; $x < $plantrow_cnt; $x++) {
+		for ($x = 0; $x < $plant_rows; $x++) {
 			
 			$row = $plant_result->fetch_array(MYSQLI_BOTH);
 			$temp_date = $row["datetime"];
@@ -68,9 +68,9 @@ $moisture_rows = $moisture_result->num_rows;
 			$temp_motor_power = $row["motor_power"];
 			$temp_temperature = $row["temperature"];
 			$temp_humidity = $row["humidity"];
-			$temp_light = $row["light"];
-			$temp_light_wo_regulator = $row["light_wo_regulator"];
 			$temp_moisture = $row["moisture"];
+			$temp_light_wo_regulator = $row["light_wo_regulator"];
+			$temp_light = $row["light"];
 			echo 
 			"<tr>
 				<td>$temp_date</td>
@@ -79,9 +79,9 @@ $moisture_rows = $moisture_result->num_rows;
 				<td>$temp_motor_power</td>
 				<td>$temp_temperature</td>
 				<td>$temp_humidity</td>
-				<td>$temp_light</td>
-				<td>$temp_light_wo_regulator</td>
 				<td>$temp_moisture</td>
+				<td>$temp_light_wo_regulator</td>
+				<td>$temp_light</td>
 			</tr>";
 		}		
 		echo "</table>";
@@ -98,7 +98,7 @@ $moisture_rows = $moisture_result->num_rows;
 					<th>Green pixels</th>
 					<th>Green percentage</th>
 				</tr>";
-		for ($x = 0; $x < $camerarow_cnt; $x++) {
+		for ($x = 0; $x < $camera_rows; $x++) {
 			
 			$row = $camera_result->fetch_array(MYSQLI_BOTH);
 			$temp_date = $row["datetime"];

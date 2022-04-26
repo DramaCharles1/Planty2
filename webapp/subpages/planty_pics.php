@@ -4,10 +4,10 @@ $dir="/var/www/html/Images";
 $images = glob($dir . "/*.jpg");
 
 $amount = 7;
-$plantyImages = array();
+$planty_images = array();
 	
 for ($x = 1; $x <= $amount; $x++) {
-	$plantyImages[$x] = str_replace("/var/www/html/","",$images[count($images)-$x]);
+	$planty_images[$x] = str_replace("/var/www/html/","",$images[count($images)-$x]);
 }
 ?>
 
@@ -30,7 +30,7 @@ for ($x = 1; $x <= $amount; $x++) {
 
 	<?php
 	for ($x = 1; $x <= $amount; $x++) {
-		echo "<img src=../$plantyImages[$x] width=\"512\" height=\"384\" alt=\"image $x\" align=\"top\" />";
+		echo "<img src=../$planty_images[$x] width=\"512\" height=\"384\" alt=\"image $x\" align=\"top\" />";
 		
 	}?>
 	
