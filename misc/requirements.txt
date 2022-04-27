@@ -3,3 +3,4 @@ pylint
 mysql-connector-python
 numpy==1.17.4
 picamera
+matplotlib==3.3.3
