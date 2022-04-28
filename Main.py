@@ -14,6 +14,7 @@ from DatabaseHandler import CameraSettingsModel
 from PlantyLib import PlantyCommands
 from PlantyLib import Temp_option
 from PlantyLib import Light_color_option
+from PlotHandler import Plot
 
 PLANTY_DATABASE = "Planty2"
 PLANTY_TABLE = "Planty_data"
@@ -64,12 +65,12 @@ def main(settings_path, settings_file, camera, nightmode):
     if not database_handler.table_exist(PLANTY_TABLE):
         new_table = Table(PLANTY_TABLE, PlantyModel())
         database_handler.create_table(new_table.name, new_table.columns)
-        database_handler.insert_into_table(PLANTY_TABLE,{"plant" : "lol"})
+        database_handler.insert_into_table(PLANTY_TABLE,{"entry" : 1})
 
     if not database_handler.table_exist(CAMERA_TABLE):
         new_table = Table(CAMERA_TABLE, CameraModel())
         database_handler.create_table(new_table.name, new_table.columns)
-        database_handler.insert_into_table(CAMERA_TABLE,{"original_pixel" : 0})
+        database_handler.insert_into_table(CAMERA_TABLE,{"entry" : 1})
 
     last_planty_settings = {"motor_duration" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["motor_duration"], True, "datetime", limit=1)[0][0],
                         "motor_power" : database_handler.select_from_table(PLANTY_SETTINGS_TABLE, ["motor_power"], True, "datetime", limit=1)[0][0],
@@ -132,11 +133,13 @@ def main(settings_path, settings_file, camera, nightmode):
         print(f"[DEBUG] original image pixels: {original_image_pixels}")
         print(f"[DEBUG] green image pixels: {green_image_pixels}")
         print(f"[DEBUG] green percent: {green_percent}")
+        new_entry = database_handler.select_from_table(CAMERA_TABLE, ["entry"], True, "Datetime", 1)[0][0] + 1
 
         camera_result = {"original_pixel" : original_image_pixels,
                         "green_pixel" : green_image_pixels,
                         "green_percent" : green_percent,
-                        "datetime" : timestamp}
+                        "datetime" : timestamp,
+                        "entry" : new_entry}
         database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
     planty_lib.lights(True, Light_color_option.WHITE, 0)
@@ -166,7 +169,38 @@ def main(settings_path, settings_file, camera, nightmode):
         planty_result["motor_power"] = -1
 
     planty_result["datetime"] = timestamp
+    new_entry = database_handler.select_from_table(PLANTY_TABLE, ["entry"], True, "Datetime", 1)[0][0] + 1
+    planty_result["entry"] = new_entry
     database_handler.insert_into_table(PLANTY_TABLE, planty_result)
+
+    light_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator"], True, "Datetime", 48)
+    if len(light_plot_data) >= 48:
+        timex = [str(x[0].time().isoformat(timespec='minutes')) for x in light_plot_data]
+        light = [y[1] for y in light_plot_data]
+        light_wo_regulator = [y[2] for y in light_plot_data]
+        data_dict = {"x_label" : "Time",
+                "y_label" : "Label",
+                "x_data" : [timex, timex],
+                "y_data" : [light,light_wo_regulator],
+                "label" : ["Light", "Light witout regulator"]}
+        light_plot = Plot(data_dict)
+        light_plot.create_lineplot(limit_x_label=True)
+        light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
+
+    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 7)
+    if len(green_plot_data) >= 7:
+        date = [str(x[0]) for x in green_plot_data]
+        date.reverse()
+        green = [y[1] for y in green_plot_data]
+        green.reverse()
+        data_dict = {"x_label" : "Date",
+                "y_label" : "Growth percent",
+                "x_data" : [date],
+                "y_data" : [green],
+                "label" : ["Growth"]}
+        green_plot = Plot(data_dict)
+        green_plot.create_lineplot(limit_x_label=False,color="green")
+        green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot")
 
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
