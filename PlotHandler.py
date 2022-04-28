@@ -18,12 +18,19 @@ class Plot:
         if not len(data["x_data"]) == len(data["y_data"]) == len(data["label"]):
             raise Exception("x_data, y_data, label needs to have the same length")
 
-    def create_lineplot(self):
+    def create_lineplot(self, limit_x_label=False, color=None):
         '''Create a plot with the number of x,y sets defined'''
         plt.xlabel(self.data["x_label"])
         plt.ylabel(self.data["y_label"])
         for set in range(0, len(self.data["x_data"])):
-            self.ax.plot(self.data["x_data"][set], self.data["y_data"][set], label=self.data["label"][set])
+            if color is not None:
+                self.ax.plot(self.data["x_data"][set], self.data["y_data"][set], label=self.data["label"][set], color=color)
+            else:
+                self.ax.plot(self.data["x_data"][set], self.data["y_data"][set], label=self.data["label"][set])
+        if limit_x_label:
+            for label in self.ax.get_xaxis().get_ticklabels()[::2]:
+                label.set_visible(False)
+            plt.setp(self.ax.get_xticklabels(), rotation=45, ha='right')
         self.ax.legend()
         plt.show()
 
@@ -35,37 +42,35 @@ class Plot:
 if __name__ == "__main__":
     from DatabaseHandler import DataBaseHandler
 
+    PLANTY_TABLE = "Planty_data"
     database_handler = DataBaseHandler()
     database_handler.connect_to_database("Planty2")
-    x_axis = database_handler.select_from_table("Planty_data", ["Datetime"], True, "Datetime", 10)
-    y_axis = database_handler.select_from_table("Planty_data", ["light"], True, "Datetime", 10)
-    print(type(x_axis[0][0]))
-    time = x_axis[5][0].time()
-    #print(datetime(x_axis[0][0]))
-    for x in x_axis:
-        print(x[0])
-    for y in y_axis:
-        print(y[0])
-
-    for dt in x_axis:
-        dt = dt[0].time()
+    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator"], True, "Datetime", 48)
+    time = [str(x[0].time().isoformat(timespec='minutes')) for x in data]
+    light = [y[1] for y in data]
+    light_wo_regulator = [y[2] for y in data]
+    print(time)
+    light.reverse()
+    print(light)
+    print(light_wo_regulator)
 
     print("Test plot")
-    x_label = "x"
-    y_label = "y"
+    x_label = "Time"
+    y_label = "Light"
     x1 = [1,2,3,4,5,6,7,8,9,10]
     y1 = [1,2,3,4,5,6,7,8,9,10]
     x2 = [5,6,7,8,9,10,11,12,13,14]
     y2 = y1
-    labels = ["label 1"]
+    
+    labels = ["Light", "light wo regulator"]
     data = {"x_label" : x_label,
             "y_label" : y_label,
-            "x_data" : [x_axis],
-            "y_data" : [y_axis],
+            "x_data" : [time, time],
+            "y_data" : [light,light_wo_regulator],
             "label" : labels}
     path = ""
     name = "test_plot"
-
+    print(data)
     plot = Plot(data)
-    plot.create_lineplot()
-    plot.save_plot(path, name)
+    plot.create_lineplot(limit_x_label=True)
+    #plot.save_plot(path, name)
