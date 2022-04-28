@@ -6,7 +6,8 @@ import mysql.connector
 
 def PlantyModel() -> Dict[str,str]:
     '''SQL planty Table model'''
-    model = {"plant" : "plant VARCHAR(10) NOT NULL",
+    model = {"entry" : "entry INT NOT NULL",
+    "plant" : "plant VARCHAR(10) NOT NULL",
     "motor_duration" : "motor_duration INT NOT NULL",
     "motor_power" : "motor_power INT NOT NULL",
     "temperature" : "temperature FLOAT NOT NULL",
@@ -20,7 +21,8 @@ def PlantyModel() -> Dict[str,str]:
 
 def CameraModel() -> Dict[str,str]:
     '''SQL camera Table model'''
-    model = {"original_pixel" : "original_pixel INT NOT NULL",
+    model = {"entry" : "entry INT NOT NULL",
+    "original_pixel" : "original_pixel INT NOT NULL",
     "green_pixel" : "green_pixel INT NOT NULL",
     "green_percent" : "green_percent FLOAT NOT NULL",
     "datetime" : "datetime DATETIME NOT NULL"}
@@ -232,17 +234,17 @@ class DataBaseHandler:
 if __name__ == "__main__":
     print("Test database handler")
     host = "localhost"
-    database = "test_planty99"
+    database = "Planty2"
     table = "test99"
     databaseHandler = DataBaseHandler(host)
-    databaseHandler.connect()
+    '''    databaseHandler.connect()
     databaseHandler.create_database(database)
     temp = databaseHandler._get_databases()
     for database in temp:
         print(database)
-    databaseHandler.close_database_connection()
+    databaseHandler.close_database_connection()'''
     databaseHandler.connect_to_database(database)
-    test_table = Table(table, TestModel())
+    ''' test_table = Table(table, TestModel())
     databaseHandler.create_table(test_table.name, test_table.columns)
     test_data= {"plant" : "Basil55", "motor_duration" : 50000, "motor_power" : None}
     databaseHandler.insert_into_table(test_table.name, test_data)
@@ -254,7 +256,9 @@ if __name__ == "__main__":
     temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration")
     print(temp)
     temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration", limit=10)
-    print(temp)
+    print(temp)'''
+    new_entry = databaseHandler.select_from_table("Planty_data", ["entry"], True, "Datetime", 1)
+    print(new_entry[0][0])
     #databaseHandler.delete_table(planty_table.name)
     #databaseHandler.delete_table(camera_table.name)
     #databaseHandler.delete_table(settings_table.name)
