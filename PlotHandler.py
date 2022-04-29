@@ -45,14 +45,15 @@ if __name__ == "__main__":
     PLANTY_TABLE = "Planty_data"
     database_handler = DataBaseHandler()
     database_handler.connect_to_database("Planty2")
-    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator"], True, "Datetime", 48)
+    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", 48)
+
+    if len(data) < 48:
+        data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", len(data) - 1)
     time = [str(x[0].time().isoformat(timespec='minutes')) for x in data]
     light = [y[1] for y in data]
     light_wo_regulator = [y[2] for y in data]
-    print(time)
-    light.reverse()
-    print(light)
-    print(light_wo_regulator)
+    moisture = [y[3] for y in data]
+    print(moisture)
 
     print("Test plot")
     x_label = "Time"
@@ -61,16 +62,43 @@ if __name__ == "__main__":
     y1 = [1,2,3,4,5,6,7,8,9,10]
     x2 = [5,6,7,8,9,10,11,12,13,14]
     y2 = y1
-    
+
     labels = ["Light", "light wo regulator"]
-    data = {"x_label" : x_label,
+    light_dict = {"x_label" : x_label,
             "y_label" : y_label,
             "x_data" : [time, time],
             "y_data" : [light,light_wo_regulator],
             "label" : labels}
     path = ""
     name = "test_plot"
-    print(data)
-    plot = Plot(data)
-    plot.create_lineplot(limit_x_label=True)
+    #print(data)
+    #plot = Plot(data)
+    #plot.create_lineplot(limit_x_label=True)
     #plot.save_plot(path, name)
+
+    CAMERA_TABLE = "Camera_data"
+    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 7)
+    if len(green_plot_data) < 7:
+        green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(data))
+
+    '''    date = [str(x[0]) for x in green_plot_data]
+    date.reverse()
+    green = [y[1] for y in green_plot_data]
+    green.reverse()
+    data_dict = {"x_label" : "Date",
+                "y_label" : "Growth percent",
+                "x_data" : [date],
+                "y_data" : [green],
+                "label" : ["Growth"]}
+    green_plot = Plot(data_dict)
+    green_plot.create_lineplot(limit_x_label=False,color="green")'''
+
+    mois_limit = [500] * len(data)
+    print(mois_limit)
+    moisture_data_dict = {"x_label" : "Time",
+                "y_label" : "Moisture",
+                "x_data" : [time, time],
+                "y_data" : [moisture, [500] * len(data)],
+                "label" : ["Moisture","Limit"]}
+    moisture_plot = Plot(moisture_data_dict)
+    moisture_plot.create_lineplot(limit_x_label=True)

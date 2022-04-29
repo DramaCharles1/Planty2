@@ -24,7 +24,6 @@ CAMERA_SETTINGS_TABLE = "Camera_settings"
 MOIS_SAMPLES = 5
 
 def main(settings_path, settings_file, camera, nightmode):
-    
     if camera == "True":
         camera = True
     elif camera == "False":
@@ -173,34 +172,50 @@ def main(settings_path, settings_file, camera, nightmode):
     planty_result["entry"] = new_entry
     database_handler.insert_into_table(PLANTY_TABLE, planty_result)
 
-    light_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator"], True, "Datetime", 48)
-    if len(light_plot_data) >= 48:
-        timex = [str(x[0].time().isoformat(timespec='minutes')) for x in light_plot_data]
-        light = [y[1] for y in light_plot_data]
-        light_wo_regulator = [y[2] for y in light_plot_data]
-        data_dict = {"x_label" : "Time",
+    day_length = 48
+    day_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", day_length)
+    if len(day_plot_data) < day_length:
+        day_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", len(day_plot_data) - 1)
+
+    timex = [str(x[0].time().isoformat(timespec='minutes')) for x in day_plot_data]
+    light = [y[1] for y in day_plot_data]
+    light_wo_regulator = [y[2] for y in day_plot_data]
+    moisture = [y[3] for y in day_plot_data]
+    light_data_dict = {"x_label" : "Time",
                 "y_label" : "Label",
                 "x_data" : [timex, timex],
                 "y_data" : [light,light_wo_regulator],
                 "label" : ["Light", "Light witout regulator"]}
-        light_plot = Plot(data_dict)
-        light_plot.create_lineplot(limit_x_label=True)
-        light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
+    light_plot = Plot(light_data_dict)
+    light_plot.create_lineplot(limit_x_label=True)
+    light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
 
-    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 7)
-    if len(green_plot_data) >= 7:
-        date = [str(x[0]) for x in green_plot_data]
-        date.reverse()
-        green = [y[1] for y in green_plot_data]
-        green.reverse()
-        data_dict = {"x_label" : "Date",
+    moisture_data_dict = {"x_label" : "Time",
+                "y_label" : "Moisture",
+                "x_data" : [timex, timex],
+                "y_data" : [moisture, [planty_settings.moisture_threshold] * len(day_plot_data)],
+                "label" : ["Moisture","Limit"]}
+    moisture_plot = Plot(moisture_data_dict)
+    moisture_plot.create_lineplot(limit_x_label=True)
+    moisture_plot.save_plot(camera_settings.settings["picture_copy_directory"], "moisture_plot_day")
+
+    week_length = 7
+    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", week_length)
+    if len(green_plot_data) < week_length:
+        green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(green_plot_data) - 1)
+
+    date = [str(x[0]) for x in green_plot_data]
+    date.reverse()
+    green = [y[1] for y in green_plot_data]
+    green.reverse()
+    data_dict = {"x_label" : "Date",
                 "y_label" : "Growth percent",
                 "x_data" : [date],
                 "y_data" : [green],
                 "label" : ["Growth"]}
-        green_plot = Plot(data_dict)
-        green_plot.create_lineplot(limit_x_label=False,color="green")
-        green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot")
+    green_plot = Plot(data_dict)
+    green_plot.create_lineplot(limit_x_label=False,color="green")
+    green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot")
 
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
