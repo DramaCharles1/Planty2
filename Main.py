@@ -172,7 +172,7 @@ def main(settings_path, settings_file, camera, nightmode):
     planty_result["entry"] = new_entry
     database_handler.insert_into_table(PLANTY_TABLE, planty_result)
 
-    day_length = 48
+    day_length = 47
     day_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", day_length)
     if len(day_plot_data) < day_length:
         day_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", len(day_plot_data) - 1)
@@ -233,7 +233,7 @@ def main(settings_path, settings_file, camera, nightmode):
                     "y_data" : [green],
                     "label" : ["Growth"]}
         green_plot = Plot(data_dict)
-        green_plot.create_lineplot(limit_x_label=False,color="green")
+        green_plot.create_lineplot(limit_x_label=True,color="green")
         green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_month")
 
 if __name__ == "__main__":

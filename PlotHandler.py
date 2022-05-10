@@ -45,9 +45,9 @@ if __name__ == "__main__":
     PLANTY_TABLE = "Planty_data"
     database_handler = DataBaseHandler()
     database_handler.connect_to_database("Planty2")
-    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", 48)
+    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", 47)
 
-    if len(data) < 48:
+    if len(data) < 47:
         data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", len(data) - 1)
     time = [str(x[0].time().isoformat(timespec='minutes')) for x in data]
     light = [y[1] for y in data]
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     #plot.create_lineplot(limit_x_label=True)
     #plot.save_plot(path, name)
 
-    CAMERA_TABLE = "Camera_data"
+    '''    CAMERA_TABLE = "Camera_data"
     camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 30)
     if len(camera_data) <= 30:
         camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(data))
@@ -91,9 +91,9 @@ if __name__ == "__main__":
                 "y_data" : [green],
                 "label" : ["Growth"]}
     green_plot = Plot(data_dict)
-    green_plot.create_lineplot(limit_x_label=False,color="green")
+    green_plot.create_lineplot(limit_x_label=False,color="green")'''
 
-    '''mois_limit = [500] * len(data)
+    mois_limit = [500] * len(data)
     print(mois_limit)
     moisture_data_dict = {"x_label" : "Time",
                 "y_label" : "Moisture",
@@ -102,4 +102,4 @@ if __name__ == "__main__":
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
     moisture_plot.create_lineplot(limit_x_label=True)
-    '''
+

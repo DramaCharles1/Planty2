@@ -43,7 +43,7 @@ $image4 = str_replace("/var/www/html/","",$images[count($images)-4]);
 $moisture_plot_day = "Images/moisture_plot_day.png";
 $moisPlotWeek = "MoisturePlotWeek.png";
 $green_plot_Week = "Images/green_plot_week.png";
-$green_plot_month = "green_plot_month.png";
+$green_plot_month = "Images/green_plot_month.png";
 $light_plot = "Images/light_plot.png";
 $lightPlotWeek = "LightPlotWeek.png";
 
