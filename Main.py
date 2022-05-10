@@ -215,7 +215,26 @@ def main(settings_path, settings_file, camera, nightmode):
                 "label" : ["Growth"]}
     green_plot = Plot(data_dict)
     green_plot.create_lineplot(limit_x_label=False,color="green")
-    green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot")
+    green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_week")
+
+    month_length = 30
+    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", month_length)
+    if len(green_plot_data) > week_length:
+        if len(green_plot_data) < month_length:
+            green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(green_plot_data) - 1)
+
+        date = [str(x[0]) for x in green_plot_data]
+        date.reverse()
+        green = [y[1] for y in green_plot_data]
+        green.reverse()
+        data_dict = {"x_label" : "Date",
+                    "y_label" : "Growth percent",
+                    "x_data" : [date],
+                    "y_data" : [green],
+                    "label" : ["Growth"]}
+        green_plot = Plot(data_dict)
+        green_plot.create_lineplot(limit_x_label=False,color="green")
+        green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_month")
 
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode

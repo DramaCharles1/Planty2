@@ -42,9 +42,9 @@ $image4 = str_replace("/var/www/html/","",$images[count($images)-4]);
 
 $moisture_plot_day = "Images/moisture_plot_day.png";
 $moisPlotWeek = "MoisturePlotWeek.png";
-$greenPlot = "Images/green_plot.png";
-$greenPlotMonth = "GreenPlotMonth.png";
-$lightPlot = "Images/light_plot.png";
+$green_plot_Week = "Images/green_plot_week.png";
+$green_plot_month = "green_plot_month.png";
+$light_plot = "Images/light_plot.png";
 $lightPlotWeek = "LightPlotWeek.png";
 
 ?>
@@ -74,11 +74,13 @@ $lightPlotWeek = "LightPlotWeek.png";
 	From: <?php echo $lastCameraUpdateDatetime?>
 	<img src="<?php echo $image1 ?>" width="666" height="500" alt="image 1" align="top"/>
 	<h2>Sunlight</h2>
-	<img src="<?php echo $lightPlot ?>" width="666" height="500" alt="Sunlight" align="top"/>
+	<img src="<?php echo $light_plot ?>" width="666" height="500" alt="Sunlight" align="top"/>
 	<h2>Moisture</h2>
 	<img src="<?php echo $moisture_plot_day ?>" width="666" height="500" alt="Moisture plot" align="top"/>
-	<h2>Growth</h2>
-	<img src="<?php echo $greenPlot ?>" width="666" height="500" alt="Growth" align="top"/>
+	<h2>Growth week</h2>
+	<img src="<?php echo $green_plot_Week ?>" width="666" height="500" alt="Growth" align="top"/>
+	<h2>Growth month</h2>
+	<img src="<?php echo $green_plot_month ?>" width="666" height="500" alt="Growth" align="top"/>
 
 	<!--
 	<img src="<?php echo $image2 ?>" width="512" height="384" alt="image 2" align="top"/>

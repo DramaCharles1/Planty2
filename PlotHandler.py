@@ -30,7 +30,7 @@ class Plot:
         if limit_x_label:
             for label in self.ax.get_xaxis().get_ticklabels()[::2]:
                 label.set_visible(False)
-            plt.setp(self.ax.get_xticklabels(), rotation=45, ha='right')
+        plt.setp(self.ax.get_xticklabels(), rotation=45, ha='right')
         self.ax.legend()
         plt.show()
 
@@ -77,13 +77,13 @@ if __name__ == "__main__":
     #plot.save_plot(path, name)
 
     CAMERA_TABLE = "Camera_data"
-    green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 7)
-    if len(green_plot_data) < 7:
-        green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(data))
+    camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 30)
+    if len(camera_data) <= 30:
+        camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(data))
 
-    '''    date = [str(x[0]) for x in green_plot_data]
+    date = [str(x[0]) for x in camera_data]
     date.reverse()
-    green = [y[1] for y in green_plot_data]
+    green = [y[1] for y in camera_data]
     green.reverse()
     data_dict = {"x_label" : "Date",
                 "y_label" : "Growth percent",
@@ -91,9 +91,9 @@ if __name__ == "__main__":
                 "y_data" : [green],
                 "label" : ["Growth"]}
     green_plot = Plot(data_dict)
-    green_plot.create_lineplot(limit_x_label=False,color="green")'''
+    green_plot.create_lineplot(limit_x_label=False,color="green")
 
-    mois_limit = [500] * len(data)
+    '''mois_limit = [500] * len(data)
     print(mois_limit)
     moisture_data_dict = {"x_label" : "Time",
                 "y_label" : "Moisture",
@@ -102,3 +102,4 @@ if __name__ == "__main__":
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
     moisture_plot.create_lineplot(limit_x_label=True)
+    '''
