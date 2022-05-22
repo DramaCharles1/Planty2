@@ -3,6 +3,7 @@
 #define BAUDRATE 57600
 #define MOIS_SENSOR_CONTROL1 2
 #define MOIS_SENSOR_CONTROL2 3
+#define MOIS_SENSOR_AMOUNT 2
 
 //serial communication
 boolean stringComplete = false;
@@ -12,7 +13,6 @@ char sep[3] = {'=', ',', '\n'};
 
 //moisture sensor
 int samples = 0; 
-int moisture_sensor_amount = 4;
 
 //analog pins
 int mois_sensor_read1 = A2;
@@ -36,7 +36,7 @@ void loop()
       {
         int moisture_sensor = ets.substring(ets.indexOf('=') + 1).toInt();
         samples = ets.substring(ets.indexOf(',') + 1).toInt();
-        if (moisture_sensor > 0 && moisture_sensor <= moisture_sensor_amount && samples > 0)
+        if (moisture_sensor > 0 && moisture_sensor <= MOIS_SENSOR_AMOUNT && samples > 0)
         {
           int moisInc = 0;
           for (int i = 1; i <= samples; i++)
@@ -61,25 +61,34 @@ void loop()
       }
       else if (action == "PLANT")
       {
-        if (ets.indexOf('1') != -1)
+        int plant_action = ets.substring(ets.indexOf('=') + 1).toInt();
+        if(plant_action > 0 && plant_action <= 2)
         {
-          //read plant info from eeprom
-          String read_plant = read_String(0);
-          read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
-          Serial.println(action + "=" + read_plant + ",OK");
-
-        } else if (ets.indexOf('2') != -1)
+          String read_plant = "";
+          String write_plant = "";
+          switch (plant_action)
+          {
+            case 1:
+              read_plant = read_String(0);
+              read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
+              Serial.println(action + "=" + read_plant + ",OK");
+            break;
+            case 2:
+              write_plant = ets.substring(ets.indexOf('=') + 3);
+              writeString(0, write_plant);
+              delay(200);
+              read_plant = read_String(0);
+              read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
+              Serial.println(action + "=" + read_plant + ",OK");
+            break;
+            default:
+            // if nothing else matches, do the default
+            // default is optional
+            Serial.println(ets + ",ERR");
+            break;
+          }
+        }else
         {
-          String write_plant = ets.substring(ets.indexOf(sep[1]) + 1);
-
-          writeString(0, write_plant);
-          delay(200);
-          String read_plant = read_String(0);
-          read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
-          Serial.println(action + "=" + read_plant + ",OK");
-        } else
-        {
-
           Serial.println(ets + ",ERR");
         }
       }
@@ -180,7 +189,6 @@ String getAction(String in)
   {
     action = in.substring(0, in.indexOf(sep[2]));
   }
-
   return action;
 }
 
