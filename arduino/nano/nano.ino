@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 #define BAUDRATE 57600
 #define MOIS_SENSOR_CONTROL1 2
 #define MOIS_SENSOR_CONTROL2 3
@@ -57,6 +59,30 @@ void loop()
           Serial.println(ets + ",ERR");
         }
       }
+      else if (action == "PLANT")
+      {
+        if (ets.indexOf('1') != -1)
+        {
+          //read plant info from eeprom
+          String read_plant = read_String(0);
+          read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
+          Serial.println(action + "=" + read_plant + ",OK");
+
+        } else if (ets.indexOf('2') != -1)
+        {
+          String write_plant = ets.substring(ets.indexOf(sep[1]) + 1);
+
+          writeString(0, write_plant);
+          delay(200);
+          String read_plant = read_String(0);
+          read_plant = read_plant.substring(0, read_plant.indexOf(sep[2]));
+          Serial.println(action + "=" + read_plant + ",OK");
+        } else
+        {
+
+          Serial.println(ets + ",ERR");
+        }
+      }
       else if(action == "TEST")
       {
         int on = ets.substring(ets.indexOf('=') + 1).toInt();
@@ -103,10 +129,38 @@ void serialEvent() {
   }
 }
 
+void writeString(char add, String data)
+{
+  int _size = data.length();
+  int i;
+  for (i = 0; i < _size; i++)
+  {
+    EEPROM.write(add + i, data[i]);
+  }
+  EEPROM.write(add + _size, '\0'); //Add termination null character for String Data
+}
+
+String read_String(char add)
+{
+  int i;
+  char data[100]; //Max 100 Bytes
+  int len = 0;
+  unsigned char k;
+  k = EEPROM.read(add);
+  while (k != '\0' && len < 500) //Read until null character
+  {
+    k = EEPROM.read(add + len);
+    data[len] = k;
+    len++;
+  }
+  data[len] = '\0';
+  return String(data);
+}
+
 boolean checkCommand(String in)
 {
   String action = getAction(in);
-  if (action == "MOIS" || action == "TEST")
+  if (action == "MOIS" || action == "TEST" || action == "PLANT")
   {
     return true;
   }
