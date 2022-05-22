@@ -1,8 +1,5 @@
 #define BAUDRATE 57600
-
-//pins
-int mois_sensor_control = D2;
-int mois_sensor_read = A1;
+#define MOIS_SENSOR_CONTROL 2
 
 //serial communication
 boolean stringComplete = false;
@@ -10,12 +7,16 @@ boolean serialFlag = false;
 String ets = "";
 char sep[3] = {'=', ',', '\n'};
 
-//moisture sensore
-int samples = 0;
+//moisture sensor
+int samples = 0; 
+
+//analog pins
+int mois_sensor_read = A0;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUDRATE);
+  pinMode(MOIS_SENSOR_CONTROL, OUTPUT); //D2
 }
 
 void loop() 
@@ -25,18 +26,14 @@ void loop()
     if (checkCommand(ets))
     {
       String action = getAction(ets);
-
-      if (action == "MOTR")
-      {
-        Serial.println(action + ",OK");
-      }
-      else if(action == "MOIS")
+      if(action == "MOIS")
       {
         samples = ets.substring(ets.indexOf('=') + 1).toInt();
         if (samples > 0)
         {
           int moisInc = 0;
-          for (int i = 1; i <= samples; i++) {
+          for (int i = 1; i <= samples; i++)
+          {
             moisInc += readMoistureSensor();
             delay(10);
           }
@@ -53,6 +50,24 @@ void loop()
         else
         {
           Serial.println(ets + ",ERR");
+        }
+      }
+      else if(action == "TEST")
+      {
+        int on = ets.substring(ets.indexOf('=') + 1).toInt();
+        if(on == 1)
+        {
+          digitalWrite(MOIS_SENSOR_CONTROL, HIGH); // moisSensorTranPin HIGH
+          Serial.println(action + "=" + on + ",OK");
+        }
+        else if (on == 0)
+        {
+          digitalWrite(MOIS_SENSOR_CONTROL, LOW); // moisSensorTranPin HIGH
+          Serial.println(action + "=" + on + ",OK");
+        }
+        else
+        {
+          Serial.println(action + "=" + on + ",ERR");
         }
       }
     }
@@ -86,7 +101,7 @@ void serialEvent() {
 boolean checkCommand(String in)
 {
   String action = getAction(in);
-  if (action == "MOTR" || action == "MOIS" || action == "TEMP" || action == "PLANT" || action == "ALS" || action == "LED" || action == "PI" || action == "PISET")
+  if (action == "MOIS" || action == "TEST")
   {
     return true;
   }
@@ -113,10 +128,10 @@ String getAction(String in)
 int readMoistureSensor()
 {
   int moisValue = -1;
-  digitalWrite(mois_sensor_control, HIGH); // moisSensorTranPin HIGH
+  digitalWrite(MOIS_SENSOR_CONTROL, HIGH); // moisSensorTranPin HIGH
   delay(200);
   moisValue = analogRead(mois_sensor_read);
-  digitalWrite(mois_sensor_control, LOW); // moisSensorTranPin LOW
+  digitalWrite(MOIS_SENSOR_CONTROL, LOW); // moisSensorTranPin LOW
   delay(200);
 
   return moisValue;
