@@ -8,10 +8,11 @@ MOTR=<parameter>,[<power>],[<duration>],OK if success
 MOTR,ERR if error
 
 Send: 
-MOIS=<samples>
+MOIS=<sensor number>,<samples>
+<sensor number>: select which moisture sensor to use
 <samples>: nmbr Int
 Return:
-MOIS=<value>K if success
+MOIS=<sensor number>,<value>,OK if success
 MOIS,ERR if error
 
 Send:

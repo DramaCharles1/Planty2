@@ -1,5 +1,6 @@
 #define BAUDRATE 57600
-#define MOIS_SENSOR_CONTROL 2
+#define MOIS_SENSOR_CONTROL1 2
+#define MOIS_SENSOR_CONTROL2 3
 
 //serial communication
 boolean stringComplete = false;
@@ -9,14 +10,17 @@ char sep[3] = {'=', ',', '\n'};
 
 //moisture sensor
 int samples = 0; 
+int moisture_sensor_amount = 4;
 
 //analog pins
-int mois_sensor_read = A0;
+int mois_sensor_read1 = A2;
+int mois_sensor_read2 = A3;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUDRATE);
-  pinMode(MOIS_SENSOR_CONTROL, OUTPUT); //D2
+  pinMode(MOIS_SENSOR_CONTROL1, OUTPUT); //D2
+  pinMode(MOIS_SENSOR_CONTROL2, OUTPUT); //D3
 }
 
 void loop() 
@@ -28,13 +32,14 @@ void loop()
       String action = getAction(ets);
       if(action == "MOIS")
       {
-        samples = ets.substring(ets.indexOf('=') + 1).toInt();
-        if (samples > 0)
+        int moisture_sensor = ets.substring(ets.indexOf('=') + 1).toInt();
+        samples = ets.substring(ets.indexOf(',') + 1).toInt();
+        if (moisture_sensor > 0 && moisture_sensor <= moisture_sensor_amount && samples > 0)
         {
           int moisInc = 0;
           for (int i = 1; i <= samples; i++)
           {
-            moisInc += readMoistureSensor();
+            moisInc += readMoistureSensor(moisture_sensor);
             delay(10);
           }
           float moisValue = moisInc / samples;
@@ -44,7 +49,7 @@ void loop()
           }
           else
           {
-            Serial.println(action + "=" + moisValue + ",OK");
+            Serial.println(action + "=" + moisture_sensor + "," + moisValue + ",OK");
           }
         }
         else
@@ -57,12 +62,12 @@ void loop()
         int on = ets.substring(ets.indexOf('=') + 1).toInt();
         if(on == 1)
         {
-          digitalWrite(MOIS_SENSOR_CONTROL, HIGH); // moisSensorTranPin HIGH
+          digitalWrite(MOIS_SENSOR_CONTROL2, HIGH); // moisSensorTranPin HIGH
           Serial.println(action + "=" + on + ",OK");
         }
         else if (on == 0)
         {
-          digitalWrite(MOIS_SENSOR_CONTROL, LOW); // moisSensorTranPin HIGH
+          digitalWrite(MOIS_SENSOR_CONTROL2, LOW); // moisSensorTranPin HIGH
           Serial.println(action + "=" + on + ",OK");
         }
         else
@@ -125,14 +130,28 @@ String getAction(String in)
   return action;
 }
 
-int readMoistureSensor()
+int readMoistureSensor(int sensor)
 {
   int moisValue = -1;
-  digitalWrite(MOIS_SENSOR_CONTROL, HIGH); // moisSensorTranPin HIGH
-  delay(200);
-  moisValue = analogRead(mois_sensor_read);
-  digitalWrite(MOIS_SENSOR_CONTROL, LOW); // moisSensorTranPin LOW
-  delay(200);
-
+  switch (sensor) {
+  case 1:
+    digitalWrite(MOIS_SENSOR_CONTROL1, HIGH); // moisSensorTranPin HIGH
+    delay(200);
+    moisValue = analogRead(mois_sensor_read1);
+    digitalWrite(MOIS_SENSOR_CONTROL1, LOW); // moisSensorTranPin LOW
+    delay(200);
+    break;
+  case 2:
+    digitalWrite(MOIS_SENSOR_CONTROL2, HIGH); // moisSensorTranPin HIGH
+    delay(200);
+    moisValue = analogRead(mois_sensor_read2);
+    digitalWrite(MOIS_SENSOR_CONTROL2, LOW); // moisSensorTranPin LOW
+    delay(200);
+    break;
+  default:
+    // if nothing else matches, do the default
+    // default is optional
+    break;
+}
   return moisValue;
 }
