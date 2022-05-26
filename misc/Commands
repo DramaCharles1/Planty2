@@ -8,10 +8,11 @@ MOTR=<parameter>,[<power>],[<duration>],OK if success
 MOTR,ERR if error
 
 Send: 
-MOIS=<samples>
+MOIS=<sensor number>,<samples>
+<sensor number>: select which moisture sensor to use
 <samples>: nmbr Int
 Return:
-MOIS=<value>K if success
+MOIS=<sensor number>,<value>,OK if success
 MOIS,ERR if error
 
 Send:
@@ -22,10 +23,14 @@ TEMP=<parameter>,<value>,OK
 TEMP,ERR if error
 
 Send:
-PLANT=<parameter>,<string>
+read:
+PLANT=<parameter>
+write:
+PLANT=<parameter>,<string 1>...,<string n>
 <parameter>: 1=read plant data from EEPROM, 2=write plant data to EEPROM
+<string>: write plant
 return:
-PLANT=<string>,OK
+PLANT=<string 1>...,<string n>,OK
 PLANT,ERR if error
 
 Send: 
