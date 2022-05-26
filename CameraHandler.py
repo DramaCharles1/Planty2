@@ -23,7 +23,7 @@ class CameraHandler:
             self.camera.iso = 100
 
         self.camera.start_preview()
-        time.sleep(2) #Camera warm up time
+        time.sleep(4) #Camera warm up time
         self.camera.capture(full_path)
         self.camera.stop_preview()
         if not self._check_picture_exist(path, picture_name):
@@ -41,7 +41,7 @@ class CameraHandler:
 
 if __name__ == "__main__":
     print("Camera test")
-    path = ""
+    path = "/media/pi/USB/test"
     test_picture = "test_night"
     cam = CameraHandler()
     cam.take_picture(path, test_picture, nightmode=True)
