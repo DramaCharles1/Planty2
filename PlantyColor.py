@@ -31,7 +31,8 @@ class PlantyColor:
 
 if __name__ == "__main__":
     print("PlantyColor test")
-    plantycolor = PlantyColor("", "default.jpg")
+    path = "/media/pi/USB/test"
+    plantycolor = PlantyColor(path, "test_night")
     print(f"Pixels: {np.count_nonzero(plantycolor.original_image)}")
     print(f"Filter image")
     lower_green = [40, 50, 50]
