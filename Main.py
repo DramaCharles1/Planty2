@@ -185,7 +185,7 @@ def main(settings_path, settings_file, camera, nightmode):
                 "y_label" : "Label",
                 "x_data" : [timex, timex],
                 "y_data" : [light,light_wo_regulator],
-                "label" : ["Light", "Light witout regulator"]}
+                "label" : ["Light", "Light without regulator"]}
     light_plot = Plot(light_data_dict)
     light_plot.create_lineplot(limit_x_label=True)
     light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
