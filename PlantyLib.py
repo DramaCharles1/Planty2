@@ -3,6 +3,7 @@ from datetime import datetime
 from time import sleep
 from enum import Enum
 from enum import IntEnum
+from typing import Dict
 import serial
 import serial.tools.list_ports
 
@@ -149,7 +150,7 @@ class PlantyCommands(PlantyConnect):
         separator = ['=',',','\n']
         rec = str(rec).replace('=',',')
         value = str(rec).split(',')
-        return value[1]
+        return value[1:len(value)-1]
 
     def __send_and_recieve(self, message: str):
         self.__send_message(message)
@@ -201,13 +202,17 @@ class PlantyCommands(PlantyConnect):
             raise AttributeError("temp_option needs to be of type Temp_option")
         return float(self.__send_and_recieve(command))
 
-    def read_moisture(self, samples=1) -> float:
+    def read_moisture(self, sensor_number=1, samples=1) -> Dict:
         '''
         Read moisture sensor. Average value from n samples
+        sensor_number: the moisture sensor to read
         samples(int): number of samples
         '''
-        command = f"MOIS={str(samples)}"
-        return float(self.__send_and_recieve(command))
+        command = f"MOIS={sensor_number},{str(samples)}"
+        moisture_read = self.__send_and_recieve(command)
+        moisture_return = {"sensor_number_return": moisture_read[0],
+                        "sensor_read": moisture_read[1]}
+        return moisture_return
 
     def read_ALS(self) -> int:
         '''
@@ -273,3 +278,11 @@ class PlantyCommands(PlantyConnect):
         else:
             command = "PI=2,0,0"
         return self.__send_and_recieve(command)
+
+if __name__ == "__main__":
+    print("test PlantyLib commands")
+    planty_connect = PlantyCommands(port="/dev/ttyUSB0")
+    print(planty_connect.read_plant())
+    print(planty_connect.read_moisture(1,5))
+    print(planty_connect.read_moisture(2,5))
+    print("end test")
