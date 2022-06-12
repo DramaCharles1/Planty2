@@ -23,7 +23,7 @@ PLANTY_SETTINGS_TABLE = "Planty_settings"
 CAMERA_SETTINGS_TABLE = "Camera_settings"
 MOIS_SAMPLES = 5
 
-def main(settings_path, settings_file, camera, nightmode):
+def main(settings_path, settings_file, camera, nightmode, test=False):
     if camera == "True":
         camera = True
     elif camera == "False":
@@ -91,7 +91,8 @@ def main(settings_path, settings_file, camera, nightmode):
             new_planty_settings[setting] = last_planty_settings[setting]
     if update_settings_database:
         new_planty_settings["datetime"] = timestamp
-        database_handler.insert_into_table(PLANTY_SETTINGS_TABLE, new_planty_settings)
+        if not test:
+            database_handler.insert_into_table(PLANTY_SETTINGS_TABLE, new_planty_settings)
 
     last_camera_settings = {"picture_directory" : database_handler.select_from_table(CAMERA_SETTINGS_TABLE, ["picture_directory"], True, "datetime", limit=1)[0][0],
                         "picture_copy_directory" : database_handler.select_from_table(CAMERA_SETTINGS_TABLE, ["picture_copy_directory"], True, "datetime", limit=1)[0][0],
@@ -112,19 +113,29 @@ def main(settings_path, settings_file, camera, nightmode):
             new_camera_settings[setting] = last_camera_settings[setting]
     if update_settings_database:
         new_camera_settings["datetime"] = timestamp
-        database_handler.insert_into_table(CAMERA_SETTINGS_TABLE, new_camera_settings)
+        if not test:
+            database_handler.insert_into_table(CAMERA_SETTINGS_TABLE, new_camera_settings)
 
     if camera:
         planty_lib.lights(True, Light_color_option.WHITE, 255)
         planty_camera = CameraHandler()
         image_name = timestamp
-        planty_camera.take_picture(camera_settings.picture_directory, image_name, nightmode=False)
-        planty_camera.copy_picture(camera_settings.picture_directory, image_name, camera_settings.picture_copy_directory, image_name)
+        if not test:
+            planty_camera.take_picture(camera_settings.picture_directory, image_name, nightmode=False)
+            planty_camera.copy_picture(camera_settings.picture_directory, image_name, camera_settings.picture_copy_directory, image_name)
+        else:
+            planty_camera.take_picture(f"{camera_settings.picture_directory}/test", image_name, nightmode=False)
 
-        original_color = PlantyColor(camera_settings.picture_directory, image_name)
+        if not test:
+            original_color = PlantyColor(camera_settings.picture_directory, image_name)
+        else:
+            original_color = PlantyColor(f"{camera_settings.picture_directory}/test", image_name)
         green_image = original_color.color_filter_image(camera_settings.lower_green_filter, camera_settings.upper_green_filter)
         green_image_name = f"{image_name}_green"
-        original_color.save_image(green_image, camera_settings.picture_directory, green_image_name)
+        if not test:
+            original_color.save_image(green_image, camera_settings.picture_directory, green_image_name)
+        else:
+            original_color.save_image(green_image, f"{camera_settings.picture_directory}/test", green_image_name)
 
         original_image_pixels = np.count_nonzero(original_color.original_image)
         green_image_pixels = np.count_nonzero(green_image)
@@ -139,7 +150,8 @@ def main(settings_path, settings_file, camera, nightmode):
                         "green_percent" : green_percent,
                         "datetime" : timestamp,
                         "entry" : new_entry}
-        database_handler.insert_into_table(CAMERA_TABLE, camera_result)
+        if not test:
+            database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
     planty_lib.lights(True, Light_color_option.WHITE, 0)
     if camera: time.sleep(1)
@@ -170,7 +182,8 @@ def main(settings_path, settings_file, camera, nightmode):
     planty_result["datetime"] = timestamp
     new_entry = database_handler.select_from_table(PLANTY_TABLE, ["entry"], True, "Datetime", 1)[0][0] + 1
     planty_result["entry"] = new_entry
-    database_handler.insert_into_table(PLANTY_TABLE, planty_result)
+    if not test:
+        database_handler.insert_into_table(PLANTY_TABLE, planty_result)
 
     day_length = 47
     day_plot_data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", day_length)
@@ -188,7 +201,8 @@ def main(settings_path, settings_file, camera, nightmode):
                 "label" : ["Light", "Light without regulator"]}
     light_plot = Plot(light_data_dict)
     light_plot.create_lineplot(limit_x_label=True)
-    light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
+    if not test:
+        light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
 
     moisture_data_dict = {"x_label" : "Time",
                 "y_label" : "Moisture",
@@ -197,7 +211,8 @@ def main(settings_path, settings_file, camera, nightmode):
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
     moisture_plot.create_lineplot(limit_x_label=True)
-    moisture_plot.save_plot(camera_settings.settings["picture_copy_directory"], "moisture_plot_day")
+    if not test:
+        moisture_plot.save_plot(camera_settings.settings["picture_copy_directory"], "moisture_plot_day")
 
     week_length = 7
     green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", week_length)
@@ -215,7 +230,8 @@ def main(settings_path, settings_file, camera, nightmode):
                 "label" : ["Growth"]}
     green_plot = Plot(data_dict)
     green_plot.create_lineplot(limit_x_label=False,color="green")
-    green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_week")
+    if not test:
+        green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_week")
 
     month_length = 30
     green_plot_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", month_length)
@@ -234,18 +250,19 @@ def main(settings_path, settings_file, camera, nightmode):
                     "label" : ["Growth"]}
         green_plot = Plot(data_dict)
         green_plot.create_lineplot(limit_x_label=True,color="green")
-        green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_month")
+        if not test:
+            green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_month")
 
 if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
     import sys
     if len(sys.argv) == 1:
-        test_argv = ["misc/", "settings.xml", True, False]
+        test_argv = ["misc/", "settings.xml", "True", "False", True]
         print("main test")
-        if len(test_argv) != 4:
+        if len(test_argv) != 5:
             raise Exception(f"Arguements not correct: {test_argv}")
         print(test_argv)
-        main(test_argv[0], test_argv[1], test_argv[2], test_argv[3])
+        main(test_argv[0], test_argv[1], test_argv[2], test_argv[3], test_argv[4])
         print("End main test")
     elif len(sys.argv) == 5:
         print(f"[ARGUEMENTS] {sys.argv}")
