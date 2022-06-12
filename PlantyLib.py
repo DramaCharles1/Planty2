@@ -210,8 +210,12 @@ class PlantyCommands(PlantyConnect):
         '''
         command = f"MOIS={sensor_number},{str(samples)}"
         moisture_read = self.__send_and_recieve(command)
-        moisture_return = {"sensor_number_return": moisture_read[0],
-                        "sensor_read": moisture_read[1]}
+        try:
+            moisture_return = {"sensor_number_return": moisture_read[0],
+                            "sensor_read": moisture_read[1]}
+        except IndexError as index_error:
+            moisture_return = {"sensor_number_return": 1,
+                            "sensor_read": moisture_read[0]}
         return moisture_return
 
     def read_ALS(self) -> int:
@@ -281,7 +285,7 @@ class PlantyCommands(PlantyConnect):
 
 if __name__ == "__main__":
     print("test PlantyLib commands")
-    planty_connect = PlantyCommands(port="/dev/ttyUSB0")
+    planty_connect = PlantyCommands()
     print(planty_connect.read_plant())
     print(planty_connect.read_moisture(1,5))
     print(planty_connect.read_moisture(2,5))
