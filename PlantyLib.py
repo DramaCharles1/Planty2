@@ -30,8 +30,8 @@ class PlantyConnect:
         try:
             self.ser = serial.Serial(self.port, self.baudrate, timeout=self._read_timeout,
                                      write_timeout=self._write_timeout)
-        except serial.SerialException as SerialEx:
-            raise SerialEx(f"[DEBUG] Could not connect to: {self.port}")
+        except serial.SerialException as serial_exception:
+            raise serial_exception(f"[DEBUG] Could not connect to: {self.port}")
 
         sleep(2)
         self.connect = True
@@ -139,7 +139,7 @@ class PlantyCommands(PlantyConnect):
         '''
         if "OK" in str(rec):
             return True
-        elif "ERR" in str(rec):
+        if "ERR" in str(rec):
             return False
         raise Exception("Not a valid command recieved" + "rec: " + rec)
 
@@ -147,7 +147,6 @@ class PlantyCommands(PlantyConnect):
         '''
         Get command values
         '''
-        separator = ['=',',','\n']
         rec = str(rec).replace('=',',')
         value = str(rec).split(',')
         return value[1:len(value)-1]
@@ -173,8 +172,7 @@ class PlantyCommands(PlantyConnect):
 
         if self.__check_command(recieve):
             return self.__get_command_value(recieve)
-        else:
-            raise Exception("Error when recieving message: " + str(recieve))
+        raise Exception("Error when recieving message: " + str(recieve))
 
     def read_plant(self) -> str:
         '''
