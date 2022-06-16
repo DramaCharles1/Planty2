@@ -200,7 +200,7 @@ class PlantyCommands(PlantyConnect):
             command = "TEMP=2"
         else:
             raise AttributeError("temp_option needs to be of type Temp_option")
-        return float(self.__send_and_recieve(command))
+        return float(self.__send_and_recieve(command)[0])
 
     def read_moisture(self, sensor_number=1, samples=1) -> Dict:
         '''
@@ -223,7 +223,7 @@ class PlantyCommands(PlantyConnect):
         Read ALS
         '''
         command = "ALS"
-        return int(self.__send_and_recieve(command))
+        return int(self.__send_and_recieve(command)[0])
 
     def start_pump(self, start: bool, power: int, duration: int):
         '''
@@ -286,7 +286,18 @@ class PlantyCommands(PlantyConnect):
 if __name__ == "__main__":
     print("test PlantyLib commands")
     planty_connect = PlantyCommands()
+    print(planty_connect.write_plant("hej"))
     print(planty_connect.read_plant())
+    print(planty_connect.write_plant("Basil"))
+    print(planty_connect.read_plant())
+    print(planty_connect.read_temperature(Temp_option.TEMPERATURE))
+    print(planty_connect.read_temperature(Temp_option.HUMIDITY))
+    print(planty_connect.lights(True, Light_color_option.RED, power=250))
+    print(planty_connect.lights(False))
+    sleep(3)
+    print(planty_connect.lights(True, Light_color_option.RED, power=0))
+    print(planty_connect.lights(False))
+    print(planty_connect.read_ALS())
     print(planty_connect.read_moisture(1,5))
     print(planty_connect.read_moisture(2,5))
     print("end test")
