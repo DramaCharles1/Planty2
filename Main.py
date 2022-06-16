@@ -154,7 +154,8 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
             database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
     planty_lib.lights(True, Light_color_option.WHITE, 0)
-    if camera: time.sleep(1)
+    if camera:
+        time.sleep(1)
 
     planty_result = {}
     planty_result["light_wo_regulator"] = planty_lib.read_ALS()
