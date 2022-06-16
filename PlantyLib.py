@@ -3,6 +3,7 @@ from datetime import datetime
 from time import sleep
 from enum import Enum
 from enum import IntEnum
+from typing import Dict
 import serial
 import serial.tools.list_ports
 
@@ -29,8 +30,8 @@ class PlantyConnect:
         try:
             self.ser = serial.Serial(self.port, self.baudrate, timeout=self._read_timeout,
                                      write_timeout=self._write_timeout)
-        except serial.SerialException as SerialEx:
-            raise SerialEx(f"[DEBUG] Could not connect to: {self.port}")
+        except serial.SerialException as serial_exception:
+            raise serial_exception(f"[DEBUG] Could not connect to: {self.port}")
 
         sleep(2)
         self.connect = True
@@ -138,7 +139,7 @@ class PlantyCommands(PlantyConnect):
         '''
         if "OK" in str(rec):
             return True
-        elif "ERR" in str(rec):
+        if "ERR" in str(rec):
             return False
         raise Exception("Not a valid command recieved" + "rec: " + rec)
 
@@ -146,10 +147,9 @@ class PlantyCommands(PlantyConnect):
         '''
         Get command values
         '''
-        separator = ['=',',','\n']
         rec = str(rec).replace('=',',')
         value = str(rec).split(',')
-        return value[1]
+        return value[1:len(value)-1]
 
     def __send_and_recieve(self, message: str):
         self.__send_message(message)
@@ -172,22 +172,21 @@ class PlantyCommands(PlantyConnect):
 
         if self.__check_command(recieve):
             return self.__get_command_value(recieve)
-        else:
-            raise Exception("Error when recieving message: " + str(recieve))
+        raise Exception("Error when recieving message: " + str(recieve))
 
     def read_plant(self) -> str:
         '''
         Read what is planted
         '''
         command = "PLANT=1"
-        return str(self.__send_and_recieve(command))
+        return str(self.__send_and_recieve(command)[0])
 
     def write_plant(self, plant: str):
         '''
         Write what is planted
         '''
         command = f"PLANT=2,{plant}"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def read_temperature(self, temp_option: Temp_option) -> float:
         '''
@@ -199,22 +198,30 @@ class PlantyCommands(PlantyConnect):
             command = "TEMP=2"
         else:
             raise AttributeError("temp_option needs to be of type Temp_option")
-        return float(self.__send_and_recieve(command))
+        return float(self.__send_and_recieve(command)[0])
 
-    def read_moisture(self, samples=1) -> float:
+    def read_moisture(self, sensor_number=1, samples=1) -> Dict:
         '''
         Read moisture sensor. Average value from n samples
+        sensor_number: the moisture sensor to read
         samples(int): number of samples
         '''
-        command = f"MOIS={str(samples)}"
-        return float(self.__send_and_recieve(command))
+        command = f"MOIS={sensor_number},{str(samples)}"
+        moisture_read = self.__send_and_recieve(command)
+        try:
+            moisture_return = {"sensor_number_return": moisture_read[0],
+                            "sensor_read": int(moisture_read[1])}
+        except IndexError as index_error:
+            moisture_return = {"sensor_number_return": 1,
+                            "sensor_read": float(moisture_read[0])}
+        return moisture_return
 
     def read_ALS(self) -> int:
         '''
         Read ALS
         '''
         command = "ALS"
-        return int(self.__send_and_recieve(command))
+        return int(self.__send_and_recieve(command)[0])
 
     def start_pump(self, start: bool, power: int, duration: int):
         '''
@@ -230,7 +237,7 @@ class PlantyCommands(PlantyConnect):
             command = f"MOTR=1,{str(power)},{str(duration)}"
         else:
             command = f"MOTR=0,{str(power)},{str(duration)}"
-        result =  self.__send_and_recieve(command)
+        result =  self.__send_and_recieve(command)[0]
         self.change_timeout(old_timeout)
         return result
 
@@ -245,7 +252,7 @@ class PlantyCommands(PlantyConnect):
             command = f"LED=1,{str(int(color_option))},{str(power)}"
         else:
             command = "LED=2"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def light_regulator_values(self, write: bool, kp=0.0, ki=0.0, t=0, max_signal=0):
         '''
@@ -260,7 +267,7 @@ class PlantyCommands(PlantyConnect):
             command = f"PISET=2,{str(kp)},{str(ki)},{str(t)},{str(max_signal)}"
         else:
             command = "PISET=1"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def start_light_regulator(self, start: bool, set_point: int):
         '''
@@ -272,4 +279,28 @@ class PlantyCommands(PlantyConnect):
             command = f"PI=2,1,{str(set_point)}"
         else:
             command = "PI=2,0,0"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
+
+if __name__ == "__main__":
+    print("test PlantyLib commands")
+    planty_connect = PlantyCommands()
+    print(planty_connect.write_plant("hej"))
+    print(planty_connect.read_plant())
+    print(planty_connect.write_plant("Basil"))
+    print(planty_connect.read_plant())
+    print(planty_connect.read_temperature(Temp_option.TEMPERATURE))
+    print(planty_connect.read_temperature(Temp_option.HUMIDITY))
+    print(planty_connect.lights(True, Light_color_option.RED, power=250))
+    print(planty_connect.lights(False))
+    sleep(1)
+    print(planty_connect.lights(True, Light_color_option.RED, power=0))
+    print(planty_connect.lights(False))
+    print(planty_connect.read_ALS())
+    print(planty_connect.read_moisture(1,5))
+    print(planty_connect.read_moisture(2,5))
+    print(planty_connect.light_regulator_values(False))
+    print(planty_connect.light_regulator_values(True, 1, 0.2, 100, 10000))
+    print(planty_connect.start_light_regulator(True, 10000))
+    sleep(1)
+    print(planty_connect.start_light_regulator(False,10000))
+    print("end test")

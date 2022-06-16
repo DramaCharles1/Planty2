@@ -154,7 +154,8 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
             database_handler.insert_into_table(CAMERA_TABLE, camera_result)
 
     planty_lib.lights(True, Light_color_option.WHITE, 0)
-    if camera: time.sleep(1)
+    if camera:
+        time.sleep(1)
 
     planty_result = {}
     planty_result["light_wo_regulator"] = planty_lib.read_ALS()
@@ -166,7 +167,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
     planty_result["temperature"] = planty_lib.read_temperature(Temp_option.TEMPERATURE)
     planty_result["humidity"] = planty_lib.read_temperature(Temp_option.HUMIDITY)
     planty_result["light"] = planty_lib.read_ALS()
-    planty_result["moisture"] = planty_lib.read_moisture(samples=MOIS_SAMPLES)
+    planty_result["moisture"] = planty_lib.read_moisture(samples=MOIS_SAMPLES)["sensor_read"]
 
     if planty_result["moisture"] <= planty_settings.settings["moisture_threshold"] and not nightmode:
         planty_lib.start_pump(True, planty_settings.settings["motor_power"], planty_settings.settings["motor_duration"])
