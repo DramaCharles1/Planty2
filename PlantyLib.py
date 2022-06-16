@@ -212,10 +212,10 @@ class PlantyCommands(PlantyConnect):
         moisture_read = self.__send_and_recieve(command)
         try:
             moisture_return = {"sensor_number_return": moisture_read[0],
-                            "sensor_read": moisture_read[1]}
+                            "sensor_read": int(moisture_read[1])}
         except IndexError as index_error:
             moisture_return = {"sensor_number_return": 1,
-                            "sensor_read": moisture_read[0]}
+                            "sensor_read": float(moisture_read[0])}
         return moisture_return
 
     def read_ALS(self) -> int:
