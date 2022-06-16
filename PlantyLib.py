@@ -181,14 +181,14 @@ class PlantyCommands(PlantyConnect):
         Read what is planted
         '''
         command = "PLANT=1"
-        return str(self.__send_and_recieve(command))
+        return str(self.__send_and_recieve(command)[0])
 
     def write_plant(self, plant: str):
         '''
         Write what is planted
         '''
         command = f"PLANT=2,{plant}"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def read_temperature(self, temp_option: Temp_option) -> float:
         '''
@@ -239,7 +239,7 @@ class PlantyCommands(PlantyConnect):
             command = f"MOTR=1,{str(power)},{str(duration)}"
         else:
             command = f"MOTR=0,{str(power)},{str(duration)}"
-        result =  self.__send_and_recieve(command)
+        result =  self.__send_and_recieve(command)[0]
         self.change_timeout(old_timeout)
         return result
 
@@ -254,7 +254,7 @@ class PlantyCommands(PlantyConnect):
             command = f"LED=1,{str(int(color_option))},{str(power)}"
         else:
             command = "LED=2"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def light_regulator_values(self, write: bool, kp=0.0, ki=0.0, t=0, max_signal=0):
         '''
@@ -269,7 +269,7 @@ class PlantyCommands(PlantyConnect):
             command = f"PISET=2,{str(kp)},{str(ki)},{str(t)},{str(max_signal)}"
         else:
             command = "PISET=1"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
     def start_light_regulator(self, start: bool, set_point: int):
         '''
@@ -281,7 +281,7 @@ class PlantyCommands(PlantyConnect):
             command = f"PI=2,1,{str(set_point)}"
         else:
             command = "PI=2,0,0"
-        return self.__send_and_recieve(command)
+        return self.__send_and_recieve(command)[0]
 
 if __name__ == "__main__":
     print("test PlantyLib commands")
