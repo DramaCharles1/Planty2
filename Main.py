@@ -166,7 +166,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
     planty_result["temperature"] = planty_lib.read_temperature(Temp_option.TEMPERATURE)
     planty_result["humidity"] = planty_lib.read_temperature(Temp_option.HUMIDITY)
     planty_result["light"] = planty_lib.read_ALS()
-    planty_result["moisture"] = planty_lib.read_moisture(samples=MOIS_SAMPLES)
+    planty_result["moisture"] = planty_lib.read_moisture(samples=MOIS_SAMPLES)["sensor_read"]
 
     if planty_result["moisture"] <= planty_settings.settings["moisture_threshold"] and not nightmode:
         planty_lib.start_pump(True, planty_settings.settings["motor_power"], planty_settings.settings["motor_duration"])
