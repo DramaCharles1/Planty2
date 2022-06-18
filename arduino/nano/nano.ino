@@ -1,5 +1,8 @@
+#include <DHT_U.h>
+#include <DHT.h>
 #include <EEPROM.h>
 
+#define DHTTYPE DHT11
 #define BAUDRATE 57600
 #define MOIS_SENSOR_CONTROL1 2
 #define MOIS_SENSOR_CONTROL2 3
@@ -13,16 +16,19 @@ char sep[3] = {'=', ',', '\n'};
 
 //moisture sensor
 int samples = 0; 
-
-//analog pins
 int mois_sensor_read1 = A2;
 int mois_sensor_read2 = A3;
+
+//Temperature sensor
+int temperature_sensor_read = A5;
+DHT dht(temperature_sensor_read, DHTTYPE);
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUDRATE);
   pinMode(MOIS_SENSOR_CONTROL1, OUTPUT); //D2
   pinMode(MOIS_SENSOR_CONTROL2, OUTPUT); //D3
+  dht.begin();
 }
 
 void loop() 
@@ -90,6 +96,20 @@ void loop()
         }else
         {
           Serial.println(ets + ",ERR");
+        }
+      }
+      else if (action == "TEMP")
+      {
+        float temperate_humidity_value = read_temperature_sensor(ets.substring(5).toInt());
+        if (temperate_humidity_value == -1)
+        {
+          Serial.println(ets + ",ERR");
+        }
+        else
+        {
+          Serial.print(action + "=");
+          Serial.print(temperate_humidity_value);
+          Serial.println(",OK");
         }
       }
       else if(action == "TEST")
@@ -169,7 +189,7 @@ String read_String(char add)
 boolean checkCommand(String in)
 {
   String action = getAction(in);
-  if (action == "MOIS" || action == "TEST" || action == "PLANT")
+  if (action == "MOIS" || action == "TEST" || action == "PLANT" || action == "TEMP")
   {
     return true;
   }
@@ -216,4 +236,20 @@ int readMoistureSensor(int sensor)
     break;
 }
   return moisValue;
+}
+
+float read_temperature_sensor(int action)
+{
+  float value = -1;
+  //int chk = DHT.read11(temperature_sensor_read);
+
+  if (action == 1) //If action=1 read temperature
+  {
+    value = dht.readTemperature();
+  }
+  else if (action == 2) //if action=2 read humidity
+  {
+    value = dht.readHumidity();
+  }
+  return value;
 }
