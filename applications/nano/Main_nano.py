@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime
 from PlantyLib import PlantyCommands
+from PlantyLib import Temp_option
 
 MOIS_SAMPLES = 5
 MOIS_SENSORS = 2
@@ -17,6 +18,10 @@ def main():
         moisture_result = planty_lib.read_moisture(sensor_number=sensor, samples=MOIS_SAMPLES)
         print(moisture_result["sensor_number_return"])
         print(moisture_result["sensor_read"])
+    planty_result["temperature"] = planty_lib.read_temperature(Temp_option.TEMPERATURE)
+    print(planty_result["temperature"])
+    planty_result["humidity"] = planty_lib.read_temperature(Temp_option.HUMIDITY)
+    print(planty_result["humidity"])
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
