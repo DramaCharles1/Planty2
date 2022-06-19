@@ -3,6 +3,7 @@ from datetime import datetime
 from PlantyLib import PlantyCommands
 from PlantyLib import Temp_option
 from DatabaseHandler import DataBaseHandler
+from DatabaseHandler import Table
 from Model_nano import NanoModel
 
 DATABASE = "nano"
@@ -19,6 +20,10 @@ def main():
         database_handler.create_database(DATABASE)
     database_handler.close_database_connection()
     database_handler.connect_to_database(DATABASE)
+
+    if not database_handler.table_exist(TABLE):
+        new_table = Table(TABLE, NanoModel())
+        database_handler.create_table(new_table.name, new_table.columns)
 
     planty_lib = PlantyCommands("/dev/ttyUSB0")
     planty_result = {}
