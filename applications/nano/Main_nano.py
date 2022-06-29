@@ -5,6 +5,7 @@ from PlantyLib import PlantyCommands
 from DatabaseHandler import DataBaseHandler
 from DatabaseHandler import Table
 from applications.nano.NanoSettings import NanoSettings
+from PlotHandler import Plot
 
 DATABASE = "nano"
 TABLE = "nano_data"
@@ -66,6 +67,35 @@ def main(settings_path, settings_file, test=False):
     planty_result["entry"] = new_entry
 
     database_handler.insert_into_table(TABLE, planty_result)
+
+    day_length = 47
+    day_plot_data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", day_length)
+    if len(day_plot_data) < day_length:
+        day_plot_data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", len(day_plot_data) - 1)
+
+    timex = [str(x[0].time().isoformat(timespec='minutes')) for x in day_plot_data]
+    moisture_plant1 = [y[1] for y in day_plot_data]
+    moisture_plant2 = [y[2] for y in day_plot_data]
+
+    moisture_plant1_data_dict = {"x_label" : "Time",
+                "y_label" : "Moisture Plant 1",
+                "x_data" : [timex, timex],
+                "y_data" : [moisture_plant1, [nano_settings.moisture_threshold] * len(day_plot_data)],
+                "label" : ["Moisture","Limit"]}
+    moisture_plot1 = Plot(moisture_plant1_data_dict)
+    moisture_plot1.create_lineplot(limit_x_label=True)
+
+    moisture_plant2_data_dict = {"x_label" : "Time",
+                "y_label" : "Moisture Plant 2",
+                "x_data" : [timex, timex],
+                "y_data" : [moisture_plant2, [nano_settings.moisture_threshold] * len(day_plot_data)],
+                "label" : ["Moisture","Limit"]}
+    moisture_plot2 = Plot(moisture_plant2_data_dict)
+    moisture_plot2.create_lineplot(limit_x_label=True)
+
+    if not test:
+        moisture_plot1.save_plot(nano_settings.settings["picture_copy_directory"], "moisture_plant1_plot_day")
+        moisture_plot2.save_plot(nano_settings.settings["picture_copy_directory"], "moisture_plant2_plot_day")
 
 if __name__ == "__main__":
     import sys
