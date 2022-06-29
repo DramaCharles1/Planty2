@@ -1,6 +1,5 @@
 from datetime import datetime
 from PlantyLib import PlantyCommands
-from PlantyLib import Temp_option
 from DatabaseHandler import DataBaseHandler
 from DatabaseHandler import Table
 from Model_nano import NanoModel
@@ -37,13 +36,8 @@ def main():
     for sensor in range(1, MOIS_SENSORS + 1):
         moisture_result = planty_lib.read_moisture(sensor_number=sensor, samples=MOIS_SAMPLES)
         planty_result[f"moisture_{moisture_result['sensor_number_return']}"] = moisture_result["sensor_read"]
-    temperature = planty_lib.read_temperature(Temp_option.TEMPERATURE)
-    planty_result["temperature"] = temperature
-    humidity = planty_lib.read_temperature(Temp_option.HUMIDITY)
-    planty_result["humidity"] = humidity
     new_entry = database_handler.select_from_table(TABLE, ["entry"], True, "Datetime", 1)[0][0] + 1
     planty_result["entry"] = new_entry
-    print(planty_result)
 
     database_handler.insert_into_table(TABLE, planty_result)
 
