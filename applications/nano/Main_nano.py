@@ -1,17 +1,21 @@
 from datetime import datetime
 from Model_nano import NanoModel
+from Model_nano import NanoSettingsModel
 from PlantyLib import PlantyCommands
 from DatabaseHandler import DataBaseHandler
 from DatabaseHandler import Table
+from applications.nano.NanoSettings import NanoSettings
 
 DATABASE = "nano"
 TABLE = "nano_data"
+SETTINGS_TABLE = "nano_settings"
 MOIS_SAMPLES = 5
 MOIS_SENSORS = 2
 
 def main(settings_path, settings_file, test=False):
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     print(f"[START] {timestamp}")
+    nano_settings = NanoSettings(settings_path, settings_file)
 
     database_handler = DataBaseHandler()
     database_handler.connect()
@@ -20,6 +24,28 @@ def main(settings_path, settings_file, test=False):
         database_handler.create_database(DATABASE)
     database_handler.close_database_connection()
     database_handler.connect_to_database(DATABASE)
+
+    if not database_handler.table_exist(SETTINGS_TABLE):
+        new_table = Table(SETTINGS_TABLE, NanoSettingsModel())
+        database_handler.create_table(new_table.name, new_table.columns)
+        database_handler.insert_into_table(SETTINGS_TABLE,{"moisture_samples" : 0.0})
+
+    last_nano_settings = {"moisture_samples" : database_handler.select_from_table(SETTINGS_TABLE, ["moisture_samples"], True, "datetime", limit=1)[0][0],
+                        "moisture_threshold" : database_handler.select_from_table(SETTINGS_TABLE, ["moisture_threshold"], True, "datetime", limit=1)[0][0],
+                        }
+    new_nano_settings = {}
+    update_settings_database = False
+    for setting in last_nano_settings.keys():
+        if not last_nano_settings[setting] == nano_settings.settings[setting]:
+            print(f"[DEBUG] update nano setting {setting} to {nano_settings.settings[setting]}")
+            update_settings_database = True
+            new_nano_settings[setting] = nano_settings.settings[setting]
+        else:
+            new_nano_settings[setting] = last_nano_settings[setting]
+    if update_settings_database:
+        new_nano_settings["datetime"] = timestamp
+        if not test:
+            database_handler.insert_into_table(SETTINGS_TABLE, new_nano_settings)
 
     if not database_handler.table_exist(TABLE):
         new_table = Table(TABLE, NanoModel())
@@ -44,7 +70,7 @@ def main(settings_path, settings_file, test=False):
 if __name__ == "__main__":
     import sys
     if len(sys.argv) == 1:
-        test_argv = ["applications/nano/", "settings.xml", True]
+        test_argv = ["applications/nano/", "settings.xml", False]
         print("main test")
         main(test_argv[0], test_argv[1], test_argv[2])
         print("End main test")

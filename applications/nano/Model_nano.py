@@ -13,30 +13,32 @@ def NanoModel() -> Dict[str,str]:
     }
     return model
 
+def NanoSettingsModel() -> Dict[str,str]:
+    '''SQL settings Table model'''
+    model = {"moisture_samples" : "moisture_samples FLOAT NOT NULL",
+    "moisture_threshold" : "moisture_threshold FLOAT NOT NULL",
+    "datetime" : "datetime DATETIME NOT NULL"}
+    return model
+
 if __name__ == "__main__":
     from DatabaseHandler import DataBaseHandler
     from DatabaseHandler import Table
     print("test nano model")
     host = "localhost"
     database = "nano"
-    table = "nano"
+    table = "nano_settings_test"
     databaseHandler = DataBaseHandler(host)
     databaseHandler.connect()
     databaseHandler.create_database(database)
     databaseHandler.close_database_connection()
     databaseHandler.connect_to_database(database)
-    test_table = Table(table, NanoModel())
+    test_table = Table(table, NanoSettingsModel())
     databaseHandler.create_table(test_table.name, test_table.columns)
-    test_data= {"entry": 1,
-    "plant_1": "basilika",
-    "moisture_1": "100",
-    "plant_2": "sallad",
-    "moisture_2": "100",
-    "temperature": 25.0,
-    "humidity": 40.0,
+    test_data= {"moisture_samples": 5.0,
+    "moisture_threshold": 500.0,
     "datetime": None}
     databaseHandler.insert_into_table(test_table.name, test_data)
-    select_cols = ["plant_1","moisture_1","temperature"]
+    select_cols = ["moisture_samples","moisture_threshold","datetime"]
     temp = databaseHandler.select_from_table(table, select_cols)
     print(temp)
     databaseHandler.close_database_connection()
