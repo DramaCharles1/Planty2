@@ -68,7 +68,7 @@ def main(settings_path, settings_file, test=False):
 
     database_handler.insert_into_table(TABLE, planty_result)
 
-    day_length = 47
+    day_length = 23
     day_plot_data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", day_length)
     if len(day_plot_data) < day_length:
         day_plot_data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", len(day_plot_data) - 1)
