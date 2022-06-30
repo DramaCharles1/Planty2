@@ -78,7 +78,7 @@ def main(settings_path, settings_file, test=False):
     moisture_plant2 = [y[2] for y in day_plot_data]
 
     moisture_plant1_data_dict = {"x_label" : "Time",
-                "y_label" : "Moisture Plant 1",
+                "y_label" : planty_result["plant_1"],
                 "x_data" : [timex, timex],
                 "y_data" : [moisture_plant1, [nano_settings.moisture_threshold] * len(day_plot_data)],
                 "label" : ["Moisture","Limit"]}
@@ -86,7 +86,7 @@ def main(settings_path, settings_file, test=False):
     moisture_plot1.create_lineplot(limit_x_label=True)
 
     moisture_plant2_data_dict = {"x_label" : "Time",
-                "y_label" : "Moisture Plant 2",
+                "y_label" : planty_result["plant_2"],
                 "x_data" : [timex, timex],
                 "y_data" : [moisture_plant2, [nano_settings.moisture_threshold] * len(day_plot_data)],
                 "label" : ["Moisture","Limit"]}
