@@ -104,10 +104,10 @@ if __name__ == "__main__":
         print("main test")
         main(test_argv[0], test_argv[1], test_argv[2])
         print("End main test")
-    elif len(sys.argv) == 4:
+    elif len(sys.argv) == 3:
         print(f"[ARGUEMENTS] {sys.argv}")
         main(sys.argv[1], sys.argv[2], False)
     else:
         if len(sys.argv) < 4:
-            raise Exception(f"[DEBUG] Not enough arguements: {sys.argv}")
+            raise Exception(f"[DEBUG] Not enough arguements: {sys.argv}, length: {len(sys.argv)}")
         raise Exception(f"[DEBUG] Too many arguments: {sys.argv}")
