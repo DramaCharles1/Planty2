@@ -1,0 +1,16 @@
+<nano>
+  <nano_settings>
+    <moisture_samples>
+      5
+    </moisture_samples>
+    <moisture_threshold>
+      500
+    </moisture_threshold>
+    <picture_directory>
+    /media/pi/USB/nano
+    </picture_directory>
+    <picture_copy_directory>
+    /var/www/html/Images/nano
+    </picture_copy_directory>
+  </nano_settings>
+</nano> 

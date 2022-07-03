@@ -41,7 +41,7 @@ class Plot:
                 label.set_visible(False)
         plt.setp(self.ax.get_xticklabels(), rotation=45, ha='right')
         self.ax.legend()
-        plt.show()
+        #plt.show()
 
     def save_plot(self, path, plot_name):
         '''Save plot as png'''
@@ -50,64 +50,30 @@ class Plot:
 
 if __name__ == "__main__":
     from DatabaseHandler import DataBaseHandler
-
-    PLANTY_TABLE = "Planty_data"
+    print("test plot")
+    DATABASE = "nano"
+    TABLE = "nano_data"
+    day_length = 23
     database_handler = DataBaseHandler()
-    database_handler.connect_to_database("Planty2")
-    data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", 47)
+    database_handler.connect_to_database(DATABASE)
 
-    if len(data) < 47:
-        data = database_handler.select_from_table(PLANTY_TABLE, ["Datetime","light","light_wo_regulator","moisture"], True, "Datetime", len(data) - 1)
-    time = [str(x[0].time().isoformat(timespec='minutes')) for x in data]
-    light = [y[1] for y in data]
-    light_wo_regulator = [y[2] for y in data]
-    moisture = [y[3] for y in data]
-    print(moisture)
+    data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", day_length)
+    if len(data) < day_length:
+        data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", len(data) - 1)
 
-    print("Test plot")
-    x_label = "Time"
-    y_label = "Light"
-    x1 = [1,2,3,4,5,6,7,8,9,10]
-    y1 = [1,2,3,4,5,6,7,8,9,10]
-    x2 = [5,6,7,8,9,10,11,12,13,14]
-    y2 = y1
+    timex = [str(x[0].time().isoformat(timespec='minutes')) for x in data]
+    moisture_plant1 = [y[1] for y in data]
+    moisture_plant2 = [y[2] for y in data]
 
-    labels = ["Light", "light wo regulator"]
-    light_dict = {"x_label" : x_label,
-            "y_label" : y_label,
-            "x_data" : [time, time],
-            "y_data" : [light,light_wo_regulator],
-            "label" : labels}
-    path = ""
-    name = "test_plot"
-    #print(data)
-    #plot = Plot(data)
-    #plot.create_lineplot(limit_x_label=True)
-    #plot.save_plot(path, name)
+    print(len(moisture_plant1))
+    print(len(timex))
 
-    '''    CAMERA_TABLE = "Camera_data"
-    camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", 30)
-    if len(camera_data) <= 30:
-        camera_data = database_handler.select_from_table(CAMERA_TABLE, ["Datetime","green_percent"], True, "Datetime", len(data))
+    moisture_plant1_data_dict = {"x_label" : "Time",
+                "y_label" : "test",
+                "x_data" : [timex, timex],
+                "y_data" : [moisture_plant1, [500] * len(data)],
+                "label" : ["Moisture", "Limit"]}
 
-    date = [str(x[0]) for x in camera_data]
-    date.reverse()
-    green = [y[1] for y in camera_data]
-    green.reverse()
-    data_dict = {"x_label" : "Date",
-                "y_label" : "Growth percent",
-                "x_data" : [date],
-                "y_data" : [green],
-                "label" : ["Growth"]}
-    green_plot = Plot(data_dict)
-    green_plot.create_lineplot(limit_x_label=False,color="green")'''
-
-    mois_limit = [500] * len(data)
-    print(mois_limit)
-    moisture_data_dict = {"x_label" : "Time",
-                "y_label" : "Moisture",
-                "x_data" : [time, time],
-                "y_data" : [moisture, [500] * len(data)],
-                "label" : ["Moisture","Limit"]}
-    moisture_plot = Plot(moisture_data_dict)
-    moisture_plot.create_lineplot(limit_x_label=True)
+    moisture_plot1 = Plot(moisture_plant1_data_dict)
+    moisture_plot1.create_lineplot(limit_x_label=True)
+    moisture_plot1.save_plot("/media/pi/USB/nano/test", "moisture_plant1_plot_day")

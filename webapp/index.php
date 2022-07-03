@@ -105,6 +105,10 @@ $lightPlotWeek = "LightPlotWeek.png";
 	<form action="subpages/planty_pics.php">
     <input type="submit" value="Show daily pictures" />
 	</form>
+
+	<form action="subpages/nano.php">
+    <input type="submit" value="Nano" />
+	</form>
 	
 <!--
 	<form action="subpages/planty_pics.php" method="get">
