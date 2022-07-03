@@ -15,7 +15,7 @@ from PlantyLib import PlantyCommands
 from PlantyLib import Temp_option
 from PlantyLib import Light_color_option
 from PlotHandler import Plot
-from PlotHandler import x_label_options
+from PlotHandler import X_label_options
 
 PLANTY_DATABASE = "Planty2"
 PLANTY_TABLE = "Planty_data"
@@ -202,7 +202,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
                 "y_data" : [light,light_wo_regulator],
                 "label" : ["Light", "Light without regulator"]}
     light_plot = Plot(light_data_dict)
-    light_plot.create_lineplot(limit_x_label=x_label_options.LIMIT)
+    light_plot.create_lineplot(limit_x_label=X_label_options.LIMIT)
     if not test:
         light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot")
     else:
@@ -214,7 +214,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
                 "y_data" : [moisture, [planty_settings.moisture_threshold] * len(day_plot_data)],
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
-    moisture_plot.create_lineplot(limit_x_label=x_label_options.LIMIT)
+    moisture_plot.create_lineplot(limit_x_label=X_label_options.LIMIT)
     if not test:
         moisture_plot.save_plot(camera_settings.settings["picture_copy_directory"], "moisture_plot_day")
     else:
@@ -235,7 +235,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
                 "y_data" : [light,light_wo_regulator],
                 "label" : ["Light", "Light without regulator"]}
     light_plot = Plot(light_data_dict)
-    light_plot.create_lineplot(limit_x_label=x_label_options.DAY)
+    light_plot.create_lineplot(limit_x_label=X_label_options.DAY)
     if not test:
         light_plot.save_plot(camera_settings.settings["picture_copy_directory"], "light_plot_three_day")
     else:
@@ -247,7 +247,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
                 "y_data" : [moisture, [planty_settings.moisture_threshold] * len(three_day_plot_data)],
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
-    moisture_plot.create_lineplot(limit_x_label=x_label_options.DAY)
+    moisture_plot.create_lineplot(limit_x_label=X_label_options.DAY)
     if not test:
         moisture_plot.save_plot(camera_settings.settings["picture_copy_directory"], "moisture_plot_three_day")
     else:
@@ -288,7 +288,7 @@ def main(settings_path, settings_file, camera, nightmode, test=False):
                     "y_data" : [green],
                     "label" : ["Growth"]}
         green_plot = Plot(data_dict)
-        green_plot.create_lineplot(limit_x_label=x_label_options.LIMIT,color="green")
+        green_plot.create_lineplot(limit_x_label=X_label_options.LIMIT,color="green")
         if not test:
             green_plot.save_plot(camera_settings.settings["picture_copy_directory"], "green_plot_month")
 
