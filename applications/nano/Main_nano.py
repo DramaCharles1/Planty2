@@ -66,7 +66,8 @@ def main(settings_path, settings_file, test=False):
     new_entry = database_handler.select_from_table(TABLE, ["entry"], True, "Datetime", 1)[0][0] + 1
     planty_result["entry"] = new_entry
 
-    database_handler.insert_into_table(TABLE, planty_result)
+    if not test:
+        database_handler.insert_into_table(TABLE, planty_result)
 
     day_length = 23
     day_plot_data = database_handler.select_from_table(TABLE, ["Datetime","moisture_1","moisture_2"], True, "Datetime", day_length)
