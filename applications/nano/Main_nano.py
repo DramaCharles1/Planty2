@@ -82,8 +82,13 @@ def main(settings_path, settings_file, test=False):
                 "x_data" : [timex, timex],
                 "y_data" : [moisture_plant1, [nano_settings.moisture_threshold] * len(day_plot_data)],
                 "label" : ["Moisture","Limit"]}
+
     moisture_plot1 = Plot(moisture_plant1_data_dict)
     moisture_plot1.create_lineplot(limit_x_label=True)
+    if not test:
+        moisture_plot1.save_plot(nano_settings.settings["picture_copy_directory"], "moisture_plant1_plot_day")
+    else:
+        moisture_plot1.save_plot(f"{nano_settings.picture_directory}/test", "moisture_plant1_plot_day")
 
     moisture_plant2_data_dict = {"x_label" : "Time",
                 "y_label" : planty_result["plant_2"],
@@ -94,14 +99,16 @@ def main(settings_path, settings_file, test=False):
     moisture_plot2.create_lineplot(limit_x_label=True)
 
     if not test:
-        moisture_plot1.save_plot(nano_settings.settings["picture_copy_directory"], "moisture_plant1_plot_day")
         moisture_plot2.save_plot(nano_settings.settings["picture_copy_directory"], "moisture_plant2_plot_day")
+    else:
+        moisture_plot2.save_plot(f"{nano_settings.picture_directory}/test", "moisture_plant2_plot_day")
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) == 1:
-        test_argv = ["applications/nano/", "settings.xml", False]
+        test_argv = ["applications/nano/", "settings.xml", True]
         print("main test")
+        print(f"[ARGUEMENTS] {test_argv}")
         main(test_argv[0], test_argv[1], test_argv[2])
         print("End main test")
     elif len(sys.argv) == 3:
