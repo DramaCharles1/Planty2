@@ -41,10 +41,12 @@ $image3 = str_replace("/var/www/html/","",$images[count($images)-3]);
 $image4 = str_replace("/var/www/html/","",$images[count($images)-4]); 
 
 $moisture_plot_day = "Images/moisture_plot_day.png";
+$moisture_plot_three_day = "Images/moisture_plot_three_day.png";
 $moisPlotWeek = "MoisturePlotWeek.png";
 $green_plot_Week = "Images/green_plot_week.png";
 $green_plot_month = "Images/green_plot_month.png";
 $light_plot = "Images/light_plot.png";
+$light_plot_three_day = "Images/light_plot_three_day.png";
 $lightPlotWeek = "LightPlotWeek.png";
 
 ?>
@@ -75,8 +77,12 @@ $lightPlotWeek = "LightPlotWeek.png";
 	<img src="<?php echo $image1 ?>" width="666" height="500" alt="image 1" align="top"/>
 	<h2>Sunlight</h2>
 	<img src="<?php echo $light_plot ?>" width="666" height="500" alt="Sunlight" align="top"/>
+	<h2>Sunlight last 3 days</h2>
+	<img src="<?php echo $light_plot_three_day ?>" width="666" height="500" alt="Sunlight last 3 days" align="top"/>
 	<h2>Moisture</h2>
 	<img src="<?php echo $moisture_plot_day ?>" width="666" height="500" alt="Moisture plot" align="top"/>
+	<h2>Moisture last 3 days</h2>
+	<img src="<?php echo $moisture_plot_three_day ?>" width="666" height="500" alt="Moisture plot last 3 days" align="top"/>
 	<h2>Growth week</h2>
 	<img src="<?php echo $green_plot_Week ?>" width="666" height="500" alt="Growth" align="top"/>
 	<h2>Growth month</h2>
