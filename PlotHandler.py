@@ -1,6 +1,12 @@
+from enum import Enum
 import os
 from typing import Dict
 import matplotlib.pyplot as plt
+
+class X_label_options(Enum):
+    NO_LIMIT = 1
+    LIMIT = 2
+    DAY = 3
 
 class Plot:
     '''class representing a plot'''
@@ -18,7 +24,7 @@ class Plot:
         if not len(data["x_data"]) == len(data["y_data"]) == len(data["label"]):
             raise Exception("x_data, y_data, label needs to have the same length")
 
-    def create_lineplot(self, limit_x_label=False, color=None):
+    def create_lineplot(self, limit_x_label=X_label_options.NO_LIMIT, color=None):
         '''Create a plot with the number of x,y sets defined'''
         plt.xlabel(self.data["x_label"])
         plt.ylabel(self.data["y_label"])
@@ -27,8 +33,11 @@ class Plot:
                 self.ax.plot(self.data["x_data"][set], self.data["y_data"][set], label=self.data["label"][set], color=color)
             else:
                 self.ax.plot(self.data["x_data"][set], self.data["y_data"][set], label=self.data["label"][set])
-        if limit_x_label:
+        if limit_x_label == X_label_options.LIMIT:
             for label in self.ax.get_xaxis().get_ticklabels()[::2]:
+                label.set_visible(False)
+        if limit_x_label == X_label_options.DAY:
+            for label in self.ax.get_xaxis().get_ticklabels():
                 label.set_visible(False)
         plt.setp(self.ax.get_xticklabels(), rotation=45, ha='right')
         self.ax.legend()
@@ -102,4 +111,3 @@ if __name__ == "__main__":
                 "label" : ["Moisture","Limit"]}
     moisture_plot = Plot(moisture_data_dict)
     moisture_plot.create_lineplot(limit_x_label=True)
-
