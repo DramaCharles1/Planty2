@@ -1,16 +1,16 @@
 import time
 from datetime import datetime
 import numpy as np
-from CameraHandler import CameraHandler
-from PlantyColor import PlantyColor
-from SettingsHandler import PlantySetings
-from SettingsHandler import CameraSettings
+from PlantySettings import PlantySetings
+from PlantySettings import CameraSettings
+from Model_planty import CameraModel
+from Model_planty import PlantyModel
+from Model_planty import PlantySettingsModel
+from Model_planty import CameraSettingsModel
 from DatabaseHandler import DataBaseHandler
 from DatabaseHandler import Table
-from DatabaseHandler import CameraModel
-from DatabaseHandler import PlantyModel
-from DatabaseHandler import PlantySettingsModel
-from DatabaseHandler import CameraSettingsModel
+from PlantyColor import PlantyColor
+from CameraHandler import CameraHandler
 from PlantyLib import PlantyCommands
 from PlantyLib import Temp_option
 from PlantyLib import Light_color_option
@@ -296,7 +296,7 @@ if __name__ == "__main__":
     #args: settings_path, settings_file, camera, nightmode
     import sys
     if len(sys.argv) == 1:
-        test_argv = ["misc/", "settings.xml", "True", "False", True]
+        test_argv = ["applications/planty/", "settings.xml", "True", "False", True]
         print("main test")
         if len(test_argv) != 5:
             raise Exception(f"Arguements not correct: {test_argv}")

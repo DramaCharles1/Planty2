@@ -4,56 +4,6 @@ from typing import Any
 from typing import Dict
 import mysql.connector
 
-def PlantyModel() -> Dict[str,str]:
-    '''SQL planty Table model'''
-    model = {"entry" : "entry INT NOT NULL",
-    "plant" : "plant VARCHAR(10) NOT NULL",
-    "motor_duration" : "motor_duration INT NOT NULL",
-    "motor_power" : "motor_power INT NOT NULL",
-    "temperature" : "temperature FLOAT NOT NULL",
-    "humidity" : "humidity FLOAT NOT NULL",
-    "light" : "light INT NOT NULL",
-    "light_wo_regulator" : "light_wo_regulator INT NOT NULL",
-    "moisture" : "moisture FLOAT NOT NULL",
-    "datetime" : "datetime DATETIME NOT NULL"
-    }
-    return model
-
-def CameraModel() -> Dict[str,str]:
-    '''SQL camera Table model'''
-    model = {"entry" : "entry INT NOT NULL",
-    "original_pixel" : "original_pixel INT NOT NULL",
-    "green_pixel" : "green_pixel INT NOT NULL",
-    "green_percent" : "green_percent FLOAT NOT NULL",
-    "datetime" : "datetime DATETIME NOT NULL"}
-    return model
-
-def PlantySettingsModel() -> Dict[str,str]:
-    '''SQL settings Table model'''
-    model = {"motor_duration" : "motor_duration INT NOT NULL",
-    "motor_power" : "motor_power INT NOT NULL",
-    "moisture_samples" : "moisture_samples FLOAT NOT NULL",
-    "moisture_threshold" : "moisture_threshold FLOAT NOT NULL",
-    "kp" : "kp FLOAT NOT NULL",
-    "ki" : "ki FLOAT NOT NULL",
-    "integration_time" : "integration_time INT NOT NULL",
-    "light_setpoint" : "light_setpoint INT NOT NULL",
-    "max_light" : "max_light INT NOT NULL",
-    "datetime" : "datetime DATETIME NOT NULL"}
-    return model
-
-def CameraSettingsModel() -> Dict[str,str]:
-    model = {"picture_directory" : "picture_directory VARCHAR(20) NOT NULL",
-    "picture_copy_directory" : "picture_copy_directory VARCHAR(20) NOT NULL",
-    "l1" : "l1 INT NOT NULL",
-    "l2" : "l2 INT NOT NULL",
-    "l3" : "l3 INT NOT NULL",
-    "u1" : "u1 INT NOT NULL",
-    "u2" : "u2 INT NOT NULL",
-    "u3" : "u3 INT NOT NULL",
-    "datetime" : "datetime DATETIME NOT NULL"}
-    return model
-
 def TestModel() -> Dict[str,str]:
     '''SQL test Table model'''
     model = {"plant" : "plant VARCHAR(10) NOT NULL",
@@ -237,28 +187,6 @@ if __name__ == "__main__":
     database = "Planty2"
     table = "test99"
     databaseHandler = DataBaseHandler(host)
-    '''    databaseHandler.connect()
-    databaseHandler.create_database(database)
-    temp = databaseHandler._get_databases()
-    for database in temp:
-        print(database)
-    databaseHandler.close_database_connection()'''
     databaseHandler.connect_to_database(database)
-    ''' test_table = Table(table, TestModel())
-    databaseHandler.create_table(test_table.name, test_table.columns)
-    test_data= {"plant" : "Basil55", "motor_duration" : 50000, "motor_power" : None}
-    databaseHandler.insert_into_table(test_table.name, test_data)
-    temp = databaseHandler.select_from_table(table, list(test_data.keys()))
-    print(temp)
-    select_cols = ["plant","motor_duration"]
-    temp = databaseHandler.select_from_table(table, select_cols)
-    print(temp)
-    temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration")
-    print(temp)
-    temp = databaseHandler.select_from_table(table, select_cols, order=True, order_by="motor_duration", limit=10)
-    print(temp)'''
     new_entry = databaseHandler.select_from_table("Planty_data", ["entry"], True, "Datetime", 1)
     print(new_entry[0][0])
-    #databaseHandler.delete_table(planty_table.name)
-    #databaseHandler.delete_table(camera_table.name)
-    #databaseHandler.delete_table(settings_table.name)
