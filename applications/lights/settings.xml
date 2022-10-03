@@ -1,0 +1,19 @@
+<lights>
+  <lights_settings>
+    <kp>
+      1.00
+    </kp>
+    <ki>
+      1.85
+    </ki>
+    <integration_time>
+      100
+    </integration_time>
+    <light_setpoint>
+      30000
+    </light_setpoint>
+    <max_light>
+      50000
+    </max_light>
+  </lights_settings>
+</lights> 
