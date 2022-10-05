@@ -3,7 +3,15 @@ from PlantyLib import Light_color_option
 from PlantyLib import PlantyCommands
 from LightSettings import LightSetings
 
-def main(settings_path, settings_file, nightmode):
+def main(settings_path: str, settings_file: str, nightmode: bool):
+    if nightmode == "True":
+        nightmode = True
+    elif nightmode == "False":
+        nightmode = False
+    else:
+        raise Exception(f"Nightmode arguements not correct: {nightmode}")
+
+    print(f"nightmode: {nightmode} type: {type(nightmode)}")
     timestamp = datetime.now().replace(microsecond=0).isoformat()
     print(f"[START] {timestamp}")
     light_settings = LightSetings(settings_path, settings_file)
